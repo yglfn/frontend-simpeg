@@ -1,0 +1,608 @@
+<template>
+  <aside
+    class="sidebar"
+    :class="{ collapsed: isCollapsed }"
+  >
+    <!-- Sidebar Header dengan Toggle Button Saja -->
+    <div class="sidebar-header">
+      <button class="toggle-button" @click="toggleSidebar" aria-label="Toggle Sidebar">
+        <i class="fas" :class="isCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
+      </button>
+    </div>
+
+    <!-- Sidebar Menu -->
+    <nav class="sidebar-menu">
+      <ul class="menu-list">
+        <!-- Dashboard -->
+        <li class="menu-item" :class="{ active: isActiveRoute('/dashboard') }">
+          <router-link 
+            to="/dashboard" 
+            class="menu-link"
+            @click="handleMenuClick('dashboard')"
+            :title="isCollapsed ? 'Dashboard' : ''"
+          >
+            <i class="fas fa-tachometer-alt"></i>
+            <span v-if="!isCollapsed">Dashboard</span>
+          </router-link>
+        </li>
+
+        <!-- Admin Menu (Hanya untuk Super Admin) -->
+        <template v-if="isSuperAdmin">
+          <!-- Pegawai Management -->
+          <template v-if="!isCollapsed">
+            <li class="menu-section">
+              <span class="section-label">MANAJEMEN PEGAWAI</span>
+            </li>
+          </template>
+          <li class="menu-item" :class="{ active: isActiveRoute('/super-admin/data-pegawai') }">
+            <router-link 
+              to="/super-admin/data-pegawai" 
+              class="menu-link"
+              @click="handleMenuClick('data-pegawai')"
+              :title="isCollapsed ? 'Data Pegawai' : ''"
+            >
+              <i class="fas fa-user-tie"></i>
+              <span v-if="!isCollapsed">Data Pegawai</span>
+            </router-link>
+          </li>
+
+          <!-- Jabatan & Unit Kerja -->
+          <template v-if="!isCollapsed">
+            <li class="menu-section">
+              <span class="section-label">ORGANISASI</span>
+            </li>
+          </template>
+          <li class="menu-item" :class="{ active: isActiveRoute('/super-admin/jabatan') }">
+            <router-link 
+              to="/super-admin/jabatan" 
+              class="menu-link"
+              @click="handleMenuClick('jabatan')"
+              :title="isCollapsed ? 'Jabatan' : ''"
+            >
+              <i class="fas fa-sitemap"></i>
+              <span v-if="!isCollapsed">Jabatan</span>
+            </router-link>
+          </li>
+
+          <li class="menu-item" :class="{ active: isActiveRoute('/super-admin/unit-kerja') }">
+            <router-link 
+              to="/super-admin/unit-kerja" 
+              class="menu-link"
+              @click="handleMenuClick('unit-kerja')"
+              :title="isCollapsed ? 'Unit Kerja' : ''"
+            >
+              <i class="fas fa-building"></i>
+              <span v-if="!isCollapsed">Unit Kerja</span>
+            </router-link>
+          </li>
+          
+          <!-- Referensi (Read Only) -->
+          <template v-if="!isCollapsed">
+            <li class="menu-section">
+              <span class="section-label">SYSTEM</span>
+            </li>
+          </template>
+          <li class="menu-item" :class="{ active: isActiveRoute('/super-admin/referensi') }">
+            <router-link 
+              to="/super-admin/referensi" 
+              class="menu-link"
+              @click="handleMenuClick('referensi')"
+              :title="isCollapsed ? 'Tabel Referensi' : ''"
+            >
+              <i class="fas fa-book"></i>
+              <span v-if="!isCollapsed">Tabel Referensi</span>
+            </router-link>
+          </li>
+        </template>
+
+        <!-- Pegawai Menu (Untuk non-admin) -->
+        <template v-else>
+          <template v-if="!isCollapsed">
+            <li class="menu-section">
+              <span class="section-label">MENU PEGAWAI</span>
+            </li>
+          </template>
+          <li class="menu-item" :class="{ active: isActiveRoute('/pegawai/profile') }">
+            <router-link 
+              to="/pegawai/profile" 
+              class="menu-link"
+              @click="handleMenuClick('profile')"
+              :title="isCollapsed ? 'Profil Saya' : ''"
+            >
+              <i class="fas fa-user"></i>
+              <span v-if="!isCollapsed">Profil Saya</span>
+            </router-link>
+          </li>
+
+          <li class="menu-item" :class="{ active: isActiveRoute('/pegawai/dokumen') }">
+            <router-link 
+              to="/pegawai/dokumen" 
+              class="menu-link"
+              @click="handleMenuClick('dokumen')"
+              :title="isCollapsed ? 'Dokumen' : ''"
+            >
+              <i class="fas fa-file-upload"></i>
+              <span v-if="!isCollapsed">Dokumen</span>
+            </router-link>
+          </li>
+        </template>
+      </ul>
+    </nav>
+
+    <!-- Sidebar Footer -->
+    <div class="sidebar-footer" v-if="!isCollapsed">
+      <div class="system-info">
+        <p class="system-version">v1.0.0</p>
+        <p class="system-status">
+          <i class="fas fa-circle status-active"></i>
+          Sistem Aktif
+        </p>
+      </div>
+      <div class="debug-info" v-if="debugMode">
+        <small>
+          User ID: {{ user?.id }}<br />
+          Role ID: {{ user?.role_id }}
+        </small>
+      </div>
+    </div>
+    <div v-else class="sidebar-footer-collapsed">
+      <i class="fas fa-circle status-active" title="Sistem Aktif"></i>
+    </div>
+  </aside>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { useAuthStore } from '@/stores/auth'
+
+const router = useRouter()
+const route = useRoute()
+const authStore = useAuthStore()
+
+const props = defineProps({
+  collapsed: {
+    type: Boolean,
+    default: false,
+  },
+})
+
+const emit = defineEmits(['toggle-collapse', 'menu-click'])
+
+// Reactive state
+const isCollapsed = ref(props.collapsed)
+
+// ==================== COMPUTED PROPERTIES ====================
+
+const user = computed(() => authStore.user)
+
+// FIXED: Check if user is super admin (role_id: 1)
+const isSuperAdmin = computed(() => {
+  if (user.value?.role_id === 1) return true
+  if (authStore.isAdmin) return true
+  if (user.value?.role) {
+    const roleLower = String(user.value.role).toLowerCase().trim()
+    return ['super_admin', 'admin', 'administrator'].includes(roleLower)
+  }
+  return false
+})
+
+// Debug mode
+const debugMode = computed(() => import.meta.env.DEV || false)
+
+// ==================== METHODS ====================
+
+const toggleSidebar = () => {
+  isCollapsed.value = !isCollapsed.value
+  emit('toggle-collapse', isCollapsed.value)
+}
+
+const handleMenuClick = (menuName) => {
+  emit('menu-click', menuName)
+}
+
+const isActiveRoute = (path) => {
+  return route.path.startsWith(path)
+}
+
+// ==================== LIFECYCLE HOOKS ====================
+
+onMounted(() => {
+  console.log('=== SIDEBAR MOUNTED ===')
+  console.log('User:', user.value)
+  console.log('Role ID:', user.value?.role_id)
+  console.log('isSuperAdmin:', isSuperAdmin.value)
+  console.log('========================')
+})
+
+// Watch for prop changes
+defineExpose({
+  isSuperAdmin,
+  toggleSidebar,
+})
+</script>
+
+<style scoped>
+/* Sidebar Base Styles - Warna tema konsisten dengan navbar */
+.sidebar {
+  width: 250px;
+  background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+  color: white;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  z-index: 1000;
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  display: flex;
+  flex-direction: column;
+  overflow-y: auto;
+  overflow-x: hidden;
+  border-right: 1px solid #34495e;
+  margin-top: 70px; /* Offset for Navbar */
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+}
+
+.sidebar.collapsed {
+  width: 70px;
+}
+
+/* Sidebar Header - Minimal */
+.sidebar-header {
+  padding: 20px 15px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(26, 37, 47, 0.8);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 60px;
+  backdrop-filter: blur(10px);
+}
+
+/* Toggle Button - Improved */
+.toggle-button {
+  background: rgba(52, 73, 94, 0.8);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: #ecf0f1;
+  font-size: 1rem;
+  cursor: pointer;
+  padding: 10px;
+  border-radius: 8px;
+  transition: all 0.3s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+.toggle-button:hover {
+  background: #3498db;
+  border-color: #3498db;
+  color: white;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.toggle-button:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* Sidebar Menu */
+.sidebar-menu {
+  flex: 1;
+  padding: 15px 0;
+  overflow-y: auto;
+}
+
+.menu-list {
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.menu-section {
+  padding: 12px 20px;
+  margin-top: 15px;
+}
+
+.section-label {
+  font-size: 0.7rem;
+  color: #95a5a6;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+  font-weight: 600;
+  opacity: 0.8;
+}
+
+.menu-item {
+  margin: 3px 10px;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.menu-link {
+  display: flex;
+  align-items: center;
+  padding: 12px 16px;
+  color: #ecf0f1;
+  text-decoration: none;
+  transition: all 0.3s ease;
+  position: relative;
+  border-radius: 8px;
+}
+
+/* Hover Effect */
+.menu-link:hover {
+  background: rgba(52, 73, 94, 0.6);
+  color: white;
+  padding-left: 20px;
+}
+
+/* Active Menu */
+.menu-item.active .menu-link {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+  color: white;
+  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+}
+
+.menu-item.active .menu-link::before {
+  content: '';
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 4px;
+  background: #fff;
+  border-radius: 0 4px 4px 0;
+}
+
+/* Icon Styling */
+.menu-link i {
+  font-size: 1.1rem;
+  min-width: 24px;
+  text-align: center;
+  color: #bdc3c7;
+  transition: all 0.3s ease;
+}
+
+.menu-item.active .menu-link i {
+  color: white;
+  transform: scale(1.1);
+}
+
+.menu-link:hover i {
+  color: #3498db;
+  transform: scale(1.1);
+}
+
+/* Text Styling */
+.menu-link span {
+  margin-left: 12px;
+  white-space: nowrap;
+  font-size: 0.9rem;
+  font-weight: 400;
+  transition: all 0.3s ease;
+}
+
+/* Collapsed State */
+.sidebar.collapsed .menu-link {
+  padding: 14px 0;
+  justify-content: center;
+  border-radius: 8px;
+  margin: 0 8px 4px 8px;
+}
+
+.sidebar.collapsed .menu-item.active .menu-link {
+  background: linear-gradient(135deg, #3498db, #2980b9);
+}
+
+.sidebar.collapsed .menu-item.active .menu-link::before {
+  width: 100%;
+  height: 3px;
+  top: auto;
+  bottom: 0;
+  left: 0;
+  border-radius: 3px;
+}
+
+/* Tooltip untuk collapsed state */
+.sidebar.collapsed .menu-link {
+  position: relative;
+}
+
+.sidebar.collapsed .menu-link:hover::after {
+  content: attr(title);
+  position: absolute;
+  left: calc(100% + 10px);
+  top: 50%;
+  transform: translateY(-50%);
+  background: #2c3e50;
+  color: white;
+  padding: 8px 12px;
+  border-radius: 6px;
+  font-size: 0.85rem;
+  white-space: nowrap;
+  z-index: 1000;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
+  border-left: 3px solid #3498db;
+  font-weight: 500;
+  pointer-events: none;
+}
+
+/* Sidebar Footer */
+.sidebar-footer {
+  padding: 20px 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  font-size: 0.8rem;
+  color: #bdc3c7;
+  background: rgba(26, 37, 47, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+.system-info {
+  text-align: center;
+}
+
+.system-version {
+  margin: 0 0 8px 0;
+  font-weight: 400;
+  opacity: 0.9;
+}
+
+.system-status {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  font-weight: 500;
+}
+
+.status-active {
+  color: #2ecc71;
+  font-size: 0.6rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0%, 100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.6;
+  }
+}
+
+.debug-info {
+  text-align: center;
+  margin-top: 15px;
+  padding-top: 15px;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  color: #95a5a6;
+  font-family: 'Courier New', monospace;
+  font-size: 0.7rem;
+}
+
+.sidebar-footer-collapsed {
+  padding: 20px 0;
+  text-align: center;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  background: rgba(26, 37, 47, 0.8);
+  backdrop-filter: blur(10px);
+}
+
+.sidebar-footer-collapsed .status-active {
+  color: #2ecc71;
+  font-size: 0.8rem;
+  animation: pulse 2s infinite;
+}
+
+/* Scrollbar Styling */
+.sidebar-menu::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar-menu::-webkit-scrollbar-track {
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 4px;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb {
+  background: rgba(52, 152, 219, 0.5);
+  border-radius: 4px;
+}
+
+.sidebar-menu::-webkit-scrollbar-thumb:hover {
+  background: rgba(52, 152, 219, 0.8);
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .sidebar {
+    width: 250px;
+    transform: translateX(-100%);
+    margin-top: 0;
+    z-index: 1100;
+  }
+
+  .sidebar:not(.collapsed) {
+    transform: translateX(0);
+    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.3);
+  }
+
+  .sidebar.collapsed {
+    width: 70px;
+    transform: translateX(0);
+  }
+  
+  .sidebar-header {
+    justify-content: flex-start;
+    padding-left: 15px;
+  }
+  
+  /* Overlay untuk mobile */
+  .sidebar:not(.collapsed)::before {
+    content: '';
+    position: fixed;
+    top: 0;
+    left: 250px;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    z-index: -1;
+  }
+}
+
+/* Animation untuk toggle button rotation */
+.toggle-button i {
+  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sidebar.collapsed .toggle-button i {
+  transform: rotate(0);
+}
+
+.sidebar:not(.collapsed) .toggle-button i {
+  transform: rotate(180deg);
+}
+
+/* Menu item animation */
+.menu-link {
+  animation: slideIn 0.3s ease-out;
+}
+
+@keyframes slideIn {
+  from {
+    opacity: 0;
+    transform: translateX(-10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+/* Smooth transition untuk sidebar */
+.sidebar {
+  transition-property: width, transform;
+}
+
+/* Style untuk menu yang disable/disabled */
+.menu-item:not(.active) .menu-link:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+/* Highlight untuk hover state */
+.menu-item:not(.active) .menu-link:hover {
+  transform: translateX(5px);
+}
+
+.sidebar.collapsed .menu-item:not(.active) .menu-link:hover {
+  transform: scale(1.1);
+}
+</style>
