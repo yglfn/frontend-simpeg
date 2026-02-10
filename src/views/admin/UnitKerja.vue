@@ -59,7 +59,7 @@
                 <option value="">Semua Parent</option>
                 <option value="null">Root (Tanpa Parent)</option>
                 <option v-for="unit in parentUnitList" :key="unit.id" :value="unit.id">
-                  {{ unit.unit_name }}
+                  {{ unit.nama_unit }}
                 </option>
               </select>
               <i class="fas fa-chevron-down dropdown-icon"></i>
@@ -418,7 +418,7 @@ const fetchUnitKerja = async () => {
       per_page: pagination.value.perPage,
       search: searchQuery.value,
       jenis_unit: filterJenis.value || undefined,
-      parent_id: (filterParent.value !== '' && filterParent.value !== 'null') ? filterParent.value : undefined
+      parent_id: filterParent.value !== '' ? filterParent.value : undefined
     }
     const response = await api.get('/super-admin/unit-kerja', { params })
     const result = response.data

@@ -124,25 +124,25 @@
                 </td>
                 <td>
                   <div class="cell-primary">
-                    <span class="font-bold text-dark">{{ employee.profile?.full_name_with_title || employee.profile?.full_name || employee.user?.username || 'Tidak Ada Nama' }}</span>
-                    <span class="small-note text-muted">{{ employee.user?.email || '-' }}</span>
+                    <span class="font-bold text-dark">{{ employee.profile?.nama_lengkap || employee.user?.username || 'Tidak Ada Nama' }}</span>
+                    <span class="small-note text-muted">{{ employee.profile?.nip || '-' }}<br>{{ employee.user?.email || '-' }}</span>
                   </div>
                 </td>
                 <td>
-                  <span class="badge badge-indigo" v-if="employee.profile?.current_position">
-                    {{ employee.profile.current_position.position?.nama_jabatan || '-' }}
+                  <span class="badge badge-indigo" v-if="employee.jabatan">
+                    {{ employee.jabatan.nama_jabatan || '-' }}
                   </span>
                   <span v-else class="text-muted">-</span>
                 </td>
                 <td>
-                  <span class="badge badge-blue" v-if="employee.profile?.current_work_unit">
-                    {{ employee.profile.current_work_unit.work_unit?.nama_unit || '-' }}
+                  <span class="badge badge-blue" v-if="employee.unit_kerja">
+                    {{ employee.unit_kerja.nama_unit || '-' }}
                   </span>
                   <span v-else class="text-muted">-</span>
                 </td>
                 <td>
-                  <span class="badge" :class="getStatusBadgeClass(employee.employment_status?.nama_status)">
-                    {{ employee.employment_status?.nama_status || 'Tidak Ada Status' }}
+                  <span class="badge" :class="getStatusBadgeClass(employee.status_kepegawaian?.nama_status)">
+                    {{ employee.status_kepegawaian?.nama_status || 'Tidak Ada Status' }}
                   </span>
                 </td>
                 <td>
@@ -211,8 +211,8 @@
                 <i class="fas fa-user-tie"></i>
               </div>
               <div class="detail-titles">
-                <h3>{{ selectedEmployee.profile?.full_name_with_title || selectedEmployee.profile?.full_name || 'Tidak Ada Nama' }}</h3>
-                <span class="badge badge-green">{{ selectedEmployee.employment_status?.nama_status || '-' }}</span>
+                <h3>{{ selectedEmployee.profile?.nama_lengkap || 'Tidak Ada Nama' }}</h3>
+                <span class="badge badge-green">{{ selectedEmployee.status_kepegawaian?.nama_status || '-' }}</span>
               </div>
             </div>
 
@@ -223,53 +223,53 @@
               </div>
               <div class="info-box">
                 <label>Email</label>
-                <p>{{ selectedEmployee.user?.email || '-' }}</p>
+                <p>{{ selectedEmployee.profile?.user?.email || '-' }}</p>
               </div>
               <div class="info-box">
                 <label>Tempat, Tanggal Lahir</label>
                 <p>
-                  {{ selectedEmployee.profile?.birth_place ? selectedEmployee.profile.birth_place + ', ' : '' }}
-                  {{ formatDate(selectedEmployee.profile?.birth_date) }}
+                  {{ selectedEmployee.profile?.tempat_lahir ? selectedEmployee.profile.tempat_lahir + ', ' : '' }}
+                  {{ formatDate(selectedEmployee.profile?.tanggal_lahir) }}
                 </p>
               </div>
               <div class="info-box">
                 <label>Jenis Kelamin</label>
-                <p>{{ selectedEmployee.profile?.gender === 'L' ? 'Laki-laki' : (selectedEmployee.profile?.gender === 'P' ? 'Perempuan' : '-') }}</p>
+                <p>{{ selectedEmployee.profile?.jenis_kelamin === 'L' ? 'Laki-laki' : (selectedEmployee.profile?.jenis_kelamin === 'P' ? 'Perempuan' : '-') }}</p>
               </div>
               <div class="info-box">
                 <label>Agama</label>
-                <p>{{ selectedEmployee.profile?.religion?.nama_agama || '-' }}</p>
+                <p>{{ selectedEmployee.profile?.agama?.nama_agama || '-' }}</p>
               </div>
               <div class="info-box">
                 <label>Pendidikan</label>
-                <p>{{ selectedEmployee.profile?.education?.nama_jenjang || '-' }}</p>
+                <p>{{ selectedEmployee.profile?.pendidikan?.nama_jenjang || '-' }}</p>
               </div>
               <div class="info-box">
                 <label>Status Pernikahan</label>
-                <p>{{ selectedEmployee.profile?.marital_status?.status || '-' }}</p>
+                <p>{{ selectedEmployee.profile?.status_kawin?.status || '-' }}</p>
               </div>
               <div class="info-box">
                 <label>Jenis Pegawai</label>
-                <p>{{ selectedEmployee.profile?.employee_type?.nama || '-' }}</p>
+                <p>{{ selectedEmployee.jenis_pegawai?.nama_jenis || '-' }}</p>
               </div>
               <div class="info-box">
                 <label>Telepon</label>
-                <p>{{ selectedEmployee.profile?.phone || '-' }}</p>
+                <p>{{ selectedEmployee.profile?.telepon || '-' }}</p>
               </div>
               <div class="info-box">
                 <label>Jabatan</label>
-                <p>{{ selectedEmployee.profile?.current_position?.position?.nama_jabatan || '-' }}</p>
+                <p>{{ selectedEmployee.jabatan?.nama_jabatan || '-' }}</p>
               </div>
-              <div class="info-box">
+                <div class="info-box">
                 <label>Unit Kerja</label>
-                <p>{{ selectedEmployee.profile?.current_work_unit?.work_unit?.nama_unit || '-' }}</p>
+                <p>{{ selectedEmployee.unit_kerja?.nama_unit || '-' }}</p>
               </div>
               <div class="info-box">
                 <label>Pangkat / Golongan</label>
                 <p>
-                  {{ selectedEmployee.profile?.current_rank?.rank?.nama_pangkat || '-' }}
-                  <span v-if="selectedEmployee.profile?.current_rank?.rank?.nama_golongan">
-                    ({{ selectedEmployee.profile.current_rank.rank.nama_golongan }})
+                  {{ selectedEmployee.pangkat?.nama_pangkat || '-' }}
+                  <span v-if="selectedEmployee.golongan">
+                    ({{ selectedEmployee.golongan.nama_golongan }})
                   </span>
                 </p>
               </div>
@@ -436,7 +436,7 @@
                 <div class="form-group half">
                   <label for="employment_status_id">Status Pegawai <span class="text-danger">*</span></label>
                   <div class="select-wrapper fluid">
-                    <select id="employment_status_id" v-model="formData.employment_status_id" required>
+                    <select id="employment_status_id" v-model="formData.status_kepegawaian_id" required>
                       <option value="">Pilih...</option>
                       <option v-for="status in employmentStatuses" :key="status.id" :value="status.id">{{ status.nama_status }}</option>
                     </select>
@@ -457,9 +457,9 @@
 
               <div class="form-row">
                 <div class="form-group half">
-                   <label for="position_id">Jabatan</label>
+                   <label for="jabatan_id">Jabatan <span class="text-danger">*</span></label>
                    <div class="select-wrapper fluid">
-                    <select id="position_id" v-model="formData.position_id">
+                    <select id="jabatan_id" v-model="formData.jabatan_id" required>
                       <option value="">Pilih...</option>
                       <option v-for="pos in positions" :key="pos.id" :value="pos.id">{{ pos.nama_jabatan }}</option>
                     </select>
@@ -470,9 +470,9 @@
 
               <div class="form-row">
                 <div class="form-group half">
-                   <label for="work_unit_id">Unit Kerja</label>
+                   <label for="unit_kerja_id">Unit Kerja</label>
                    <div class="select-wrapper fluid">
-                    <select id="work_unit_id" v-model="formData.work_unit_id">
+                    <select id="unit_kerja_id" v-model="formData.unit_kerja_id">
                       <option value="">Pilih...</option>
                       <option v-for="unit in work_units" :key="unit.id" :value="unit.id">{{ unit.nama_unit }}</option>
                     </select>
@@ -480,9 +480,9 @@
                    </div>
                 </div>
                 <div class="form-group half">
-                   <label for="rank_id">Pangkat/Golongan</label>
+                   <label for="pangkat_id">Pangkat/Golongan</label>
                    <div class="select-wrapper fluid">
-                    <select id="rank_id" v-model="formData.rank_id">
+                    <select id="pangkat_id" v-model="formData.pangkat_id" @change="formData.golongan_id = ranks.find(r => r.id === formData.pangkat_id)?.golongan_id || ''">
                       <option value="">Pilih...</option>
                       <option v-for="rank in ranks" :key="rank.id" :value="rank.id">{{ rank.nama_pangkat }} ({{ rank.nama_golongan }})</option>
                     </select>
@@ -491,7 +491,7 @@
                 </div>
               </div>
 
-               <div class="form-row">
+              <div class="form-row">
                 <div class="form-group half">
                   <label for="tmt_cpns">TMT CPNS</label>
                   <input type="date" id="tmt_cpns" v-model="formData.tmt_cpns" />
@@ -499,6 +499,21 @@
                 <div class="form-group half">
                   <label for="tmt_pns">TMT PNS</label>
                   <input type="date" id="tmt_pns" v-model="formData.tmt_pns" />
+                </div>
+              </div>
+
+              <div class="form-row three-cols">
+                <div class="form-group">
+                   <label for="no_sk_jabatan">Nomor SK Jabatan <span class="text-danger">*</span></label>
+                   <input type="text" id="no_sk_jabatan" v-model="formData.no_sk_jabatan" required placeholder="Nomor SK" />
+                </div>
+                <div class="form-group">
+                   <label for="tanggal_sk_jabatan">Tanggal SK <span class="text-danger">*</span></label>
+                   <input type="date" id="tanggal_sk_jabatan" v-model="formData.tanggal_sk_jabatan" required />
+                </div>
+                <div class="form-group">
+                   <label for="tmt_jabatan">TMT Jabatan <span class="text-danger">*</span></label>
+                   <input type="date" id="tmt_jabatan" v-model="formData.tmt_jabatan" required />
                 </div>
               </div>
 
@@ -525,7 +540,7 @@
             </div>
             <h3>Hapus Pegawai?</h3>
             <p class="modal-desc">
-              Anda akan menghapus pegawai <strong>{{ selectedEmployee?.profile?.full_name_with_title || selectedEmployee?.profile?.full_name || 'Tidak Ada Nama' }}</strong>.
+              Anda akan menghapus pegawai <strong>{{ selectedEmployee?.profile?.nama_lengkap || 'Tidak Ada Nama' }}</strong>.
               Tindakan ini tidak dapat dibatalkan.
             </p>
             <div class="modal-actions-center">
@@ -616,6 +631,8 @@ const formData = ref({
   golongan_id: '',           // Added if needed, but often derived from Pangkat
   // Riwayat Jabatan Awal (Required by Backend Store)
   tmt_jabatan: '',
+  no_sk_jabatan: '', // Added for no_sk
+  tanggal_sk_jabatan: '', // Added for tanggal_sk
 })
 
 // Computed Properties
@@ -674,7 +691,14 @@ const createEmployee = async () => {
     fetchEmployees()
   } catch (error) {
     console.error('Create Error', error)
-    ElMessage.error(error.response?.data?.message || 'Gagal menambah pegawai')
+    if (error.response?.status === 422 && error.response?.data?.errors) {
+        const errors = error.response.data.errors
+        // Show first error message
+        const firstError = Object.values(errors)[0][0]
+        ElMessage.error(firstError)
+    } else {
+        ElMessage.error(error.response?.data?.message || 'Gagal menambah pegawai')
+    }
   } finally {
     submitting.value = false
   }
@@ -694,7 +718,14 @@ const updateEmployee = async () => {
     closeFormModal()
     fetchEmployees()
   } catch (error) {
-    ElMessage.error(error.response?.data?.message || 'Gagal memperbarui pegawai')
+     console.error('Update Error', error)
+    if (error.response?.status === 422 && error.response?.data?.errors) {
+        const errors = error.response.data.errors
+        const firstError = Object.values(errors)[0][0]
+        ElMessage.error(firstError)
+    } else {
+        ElMessage.error(error.response?.data?.message || 'Gagal memperbarui pegawai')
+    }
   } finally {
     submitting.value = false
   }
@@ -723,34 +754,34 @@ const openEditModal = (employee) => {
     
     // Map Profile fields
     formData.value = {
-        nip: employee.nip,
-        nama_lengkap: employee.nama_lengkap,
-        gelar_depan_1: employee.gelar_depan_1,
-        gelar_depan_2: employee.gelar_depan_2,
-        gelar_belakang: employee.gelar_belakang,
-        tempat_lahir: employee.tempat_lahir,
-        tanggal_lahir: employee.tanggal_lahir,
-        jenis_kelamin: employee.jenis_kelamin,
-        agama_id: employee.agama_id || '',
-        pendidikan_id: employee.pendidikan_id || '',
-        status_kawin_id: employee.status_kawin_id || '',
-        alamat_1_id: employee.alamat_1_id,
-        alamat_2_id: employee.alamat_2_id,
-        kode_pos: employee.kode_pos,
-        telepon: employee.telepon,
-        golongan_darah_id: employee.golongan_darah_id || '',
-        bank_id: employee.bank_id,
-        tmt_cpns: employee.tmt_cpns,
-        tmt_pns: employee.tmt_pns,
+        nip: employee.profile?.nip,
+        nama_lengkap: employee.profile?.nama_lengkap,
+        gelar_depan_1: employee.profile?.gelar_depan_1,
+        gelar_depan_2: employee.profile?.gelar_depan_2,
+        gelar_belakang: employee.profile?.gelar_belakang,
+        tempat_lahir: employee.profile?.tempat_lahir,
+        tanggal_lahir: employee.profile?.tanggal_lahir,
+        jenis_kelamin: employee.profile?.jenis_kelamin,
+        agama_id: employee.profile?.agama_id || '',
+        pendidikan_id: employee.profile?.pendidikan_id || '',
+        status_kawin_id: employee.profile?.status_kawin_id || '',
+        alamat_1_id: employee.profile?.alamat_1_id,
+        alamat_2_id: employee.profile?.alamat_2_id,
+        kode_pos: employee.profile?.kode_pos,
+        telepon: employee.profile?.telepon,
+        golongan_darah_id: employee.profile?.golongan_darah_id || '',
+        bank_id: employee.profile?.bank_id,
+        tmt_cpns: employee.profile?.tmt_cpns,
+        tmt_pns: employee.profile?.tmt_pns,
         
-        // Map Pegawai fields
-        jenis_pegawai_id: employee.pegawai?.jenis_pegawai_id || '',
-        status_kepegawaian_id: employee.pegawai?.status_kepegawaian_id || '',
-        jabatan_id: employee.pegawai?.jabatan_id || '',
-        unit_kerja_id: employee.pegawai?.unit_kerja_id || '',
-        pangkat_id: employee.pegawai?.pangkat_id || '',
-        golongan_id: employee.pegawai?.golongan_id || '',
-        tmt_jabatan: '', // TMT Jabatan usually not editable directly on profile, but on Riwayat. Leave empty or handle separately ?
+        // Map Pegawai fields (Directly from employee object now)
+        jenis_pegawai_id: employee.jenis_pegawai_id || '',
+        status_kepegawaian_id: employee.status_kepegawaian_id || '',
+        jabatan_id: employee.jabatan_id || '',
+        unit_kerja_id: employee.unit_kerja_id || '',
+        pangkat_id: employee.pangkat_id || '',
+        golongan_id: employee.golongan_id || '',
+        tmt_jabatan: '', // Still empty as it's from Riwayat
     }
 }
 
@@ -782,7 +813,9 @@ const resetForm = () => {
       unit_kerja_id: '',
       pangkat_id: '',
       golongan_id: '',
-      tmt_jabatan: '', 
+      tmt_jabatan: '',
+      no_sk_jabatan: '',
+      tanggal_sk_jabatan: '',
     }
 }
 

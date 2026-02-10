@@ -273,52 +273,54 @@ const fetchDashboardData = async () => {
     
     // Map backend response to dashboard state
     dashboardData.value = {
-      total_pegawai: data.total_pegawai,
-      total_unit_kerja: data.total_unit_kerja,
-      total_jabatan: data.total_jabatan,
+      total_pegawai: data.summary.total_pegawai,
+      total_unit_kerja: data.unit_kerja.total_unit_kerja,
+      total_jabatan: data.jabatan.aktif, // Menggunakan Jabatan Aktif
     }
+
+    // Map recent activities
+    if (data.aktivitas_terbaru && Array.isArray(data.aktivitas_terbaru)) {
+        recentActivities.value = data.aktivitas_terbaru.map(activity => ({
+            icon: `fa-${activity.icon}`,
+            title: activity.title,
+            description: activity.description,
+            time: formatTimeAgo(activity.created_at),
+            status: getActivityStatus(activity.type)
+        }))
+    } else {
+        recentActivities.value = []
+    }
+
   } catch (error) {
     console.error('Error loading dashboard:', error)
     errorMessage.value = error.response?.data?.message || 'Gagal terhubung ke server'
     ElMessage.error('Gagal memuat data dashboard')
   } finally {
     isLoading.value = false
+    isLoadingActivities.value = false
   }
 }
 
 const fetchRecentActivities = async () => {
-  try {
-    isLoadingActivities.value = true
-    // Simulate fetching activities since there is no endpoint yet
-    // In a real app, this would be await api.get('/activities/recent')
-    
-    // Create simulated activities based on real data
-    const activities = []
-    
-    if (dashboardData.value.total_pegawai > 0) {
-      activities.push({
-        icon: 'fa-users',
-        title: 'Data Pegawai',
-        description: `${dashboardData.value.total_pegawai} pegawai aktif dalam sistem`,
-        time: 'Hari ini',
-        status: 'info'
-      })
-    }
-    
-    activities.push({
-      icon: 'fa-check-circle',
-      title: 'Sistem Siap',
-      description: 'Panel admin berhasil dimuat sepenuhnya',
-      time: 'Baru saja',
-      status: 'success'
-    })
+  // Already handled in fetchDashboardData since backend returns everything
+}
 
-    recentActivities.value = activities
-  } catch (error) {
-    console.error(error)
-  } finally {
-    isLoadingActivities.value = false
-  }
+const formatTimeAgo = (dateString) => {
+    if (!dateString) return ''
+    const date = new Date(dateString)
+    const now = new Date()
+    const diffInSeconds = Math.floor((now - date) / 1000)
+    
+    if (diffInSeconds < 60) return 'Baru saja'
+    if (diffInSeconds < 3600) return `${Math.floor(diffInSeconds / 60)} menit yang lalu`
+    if (diffInSeconds < 86400) return `${Math.floor(diffInSeconds / 3600)} jam yang lalu`
+    return date.toLocaleDateString('id-ID')
+}
+
+const getActivityStatus = (type) => {
+    if (type === 'pegawai_baru') return 'success'
+    if (type === 'riwayat_jabatan_baru') return 'warning'
+    return 'info'
 }
 
 const goToModule = (path) => {
@@ -340,7 +342,6 @@ const getActivityIconClass = (status) => {
 
 const refreshDashboard = () => {
   fetchDashboardData()
-  fetchRecentActivities()
 }
 
 // Lifecycle
