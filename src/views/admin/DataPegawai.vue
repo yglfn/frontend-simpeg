@@ -206,6 +206,7 @@
             <button class="btn-close" @click="closeDetailModal"><i class="fas fa-times"></i></button>
           </div>
           <div class="modal-body">
+            <!-- Header Pegawai -->
             <div class="detail-header-block">
               <div class="icon-circle bg-indigo">
                 <i class="fas fa-user-tie"></i>
@@ -216,74 +217,112 @@
               </div>
             </div>
 
-            <div class="detail-grid">
-              <div class="info-box">
-                <label>NIP</label>
-                <p>{{ selectedEmployee.profile?.nip || '-' }}</p>
+            <!-- ========== SECTION: Data Pribadi ========== -->
+            <div class="detail-section">
+              <div class="detail-section-header">
+                <i class="fas fa-id-card"></i>
+                <span>Data Pribadi</span>
               </div>
-              <div class="info-box">
-                <label>Email</label>
-                <p>{{ selectedEmployee.profile?.user?.email || '-' }}</p>
-              </div>
-              <div class="info-box">
-                <label>Tempat, Tanggal Lahir</label>
-                <p>
-                  {{ selectedEmployee.profile?.tempat_lahir ? selectedEmployee.profile.tempat_lahir + ', ' : '' }}
-                  {{ formatDate(selectedEmployee.profile?.tanggal_lahir) }}
-                </p>
-              </div>
-              <div class="info-box">
-                <label>Jenis Kelamin</label>
-                <p>{{ selectedEmployee.profile?.jenis_kelamin === 'L' ? 'Laki-laki' : (selectedEmployee.profile?.jenis_kelamin === 'P' ? 'Perempuan' : '-') }}</p>
-              </div>
-              <div class="info-box">
-                <label>Agama</label>
-                <p>{{ selectedEmployee.profile?.agama?.nama_agama || '-' }}</p>
-              </div>
-              <div class="info-box">
-                <label>Pendidikan</label>
-                <p>{{ selectedEmployee.profile?.pendidikan?.nama_jenjang || '-' }}</p>
-              </div>
-              <div class="info-box">
-                <label>Status Pernikahan</label>
-                <p>{{ selectedEmployee.profile?.status_kawin?.status || '-' }}</p>
-              </div>
-              <div class="info-box">
-                <label>Jenis Pegawai</label>
-                <p>{{ selectedEmployee.jenis_pegawai?.nama_jenis || '-' }}</p>
-              </div>
-              <div class="info-box">
-                <label>Telepon</label>
-                <p>{{ selectedEmployee.profile?.telepon || '-' }}</p>
-              </div>
-              <div class="info-box">
-                <label>Jabatan</label>
-                <p>{{ selectedEmployee.jabatan?.nama_jabatan || '-' }}</p>
-              </div>
+              <div class="detail-grid">
                 <div class="info-box">
-                <label>Unit Kerja</label>
-                <p>{{ selectedEmployee.unit_kerja?.nama_unit || '-' }}</p>
+                  <label>NIP</label>
+                  <p>{{ selectedEmployee.profile?.nip || '-' }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Email</label>
+                  <p>{{ selectedEmployee.profile?.user?.email || '-' }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Tempat, Tanggal Lahir</label>
+                  <p>
+                    {{ selectedEmployee.profile?.tempat_lahir ? selectedEmployee.profile.tempat_lahir + ', ' : '' }}
+                    {{ formatDate(selectedEmployee.profile?.tanggal_lahir) }}
+                  </p>
+                </div>
+                <div class="info-box">
+                  <label>Jenis Kelamin</label>
+                  <p>{{ selectedEmployee.profile?.jenis_kelamin === 'L' ? 'Laki-laki' : (selectedEmployee.profile?.jenis_kelamin === 'P' ? 'Perempuan' : '-') }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Agama</label>
+                  <p>{{ selectedEmployee.profile?.agama?.nama_agama || '-' }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Status Pernikahan</label>
+                  <p>{{ selectedEmployee.profile?.status_kawin?.status || '-' }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Pendidikan Terakhir</label>
+                  <p>{{ selectedEmployee.profile?.pendidikan?.nama_jenjang || '-' }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Golongan Darah</label>
+                  <p>{{ selectedEmployee.profile?.golongan_darah?.golongan_darah || '-' }}</p>
+                </div>
+                <div class="info-box full-width">
+                  <label>Telepon</label>
+                  <p>{{ selectedEmployee.profile?.telepon || '-' }}</p>
+                </div>
               </div>
-              <div class="info-box">
-                <label>Pangkat / Golongan</label>
-                <p>
-                  {{ selectedEmployee.pangkat?.nama_pangkat || '-' }}
-                  <span v-if="selectedEmployee.golongan">
-                    ({{ selectedEmployee.golongan.nama_golongan }})
-                  </span>
-                </p>
+            </div>
+
+            <!-- ========== SECTION: Data Kepegawaian ========== -->
+            <div class="detail-section">
+              <div class="detail-section-header">
+                <i class="fas fa-briefcase"></i>
+                <span>Data Kepegawaian</span>
               </div>
-              <div class="info-box">
-                <label>TMT CPNS</label>
-                <p>{{ formatDate(selectedEmployee.profile?.tmt_cpns) }}</p>
+              <div class="detail-grid">
+                <div class="info-box">
+                  <label>Jenis Pegawai</label>
+                  <p>{{ selectedEmployee.jenis_pegawai?.nama_jenis || '-' }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Status Kepegawaian</label>
+                  <p>{{ selectedEmployee.status_kepegawaian?.nama_status || '-' }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Jabatan</label>
+                  <p>{{ selectedEmployee.jabatan?.nama_jabatan || '-' }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Unit Kerja</label>
+                  <p>{{ selectedEmployee.unit_kerja?.nama_unit || '-' }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Pangkat</label>
+                  <p>{{ selectedEmployee.pangkat?.nama_pangkat || '-' }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Golongan</label>
+                  <p>{{ selectedEmployee.golongan?.nama_golongan || '-' }}</p>
+                </div>
+                <div class="info-box">
+                  <label>TMT CPNS</label>
+                  <p>{{ formatDate(selectedEmployee.profile?.tmt_cpns) }}</p>
+                </div>
+                <div class="info-box">
+                  <label>TMT PNS</label>
+                  <p>{{ formatDate(selectedEmployee.profile?.tmt_pns) }}</p>
+                </div>
               </div>
-              <div class="info-box">
-                <label>Dibuat Pada</label>
-                <p>{{ formatDateTime(selectedEmployee.created_at) }}</p>
+            </div>
+
+            <!-- ========== SECTION: Informasi Lainnya ========== -->
+            <div class="detail-section">
+              <div class="detail-section-header">
+                <i class="fas fa-info-circle"></i>
+                <span>Informasi Lainnya</span>
               </div>
-              <div class="info-box">
-                <label>Terakhir Diubah</label>
-                <p>{{ formatDateTime(selectedEmployee.updated_at) }}</p>
+              <div class="detail-grid">
+                <div class="info-box">
+                  <label>Dibuat Pada</label>
+                  <p>{{ formatDateTime(selectedEmployee.created_at) }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Terakhir Diubah</label>
+                  <p>{{ formatDateTime(selectedEmployee.updated_at) }}</p>
+                </div>
               </div>
             </div>
           </div>
@@ -380,7 +419,7 @@
                   <div class="select-wrapper fluid">
                     <select id="golongan_darah_id" v-model="formData.golongan_darah_id">
                       <option value="">Pilih...</option>
-                      <option v-for="blood in bloodTypes" :key="blood.id" :value="blood.id">{{ blood.code }}</option>
+                      <option v-for="blood in bloodTypes" :key="blood.id" :value="blood.id">{{ blood.kode }}</option>
                     </select>
                     <i class="fas fa-chevron-down dropdown-icon"></i>
                   </div>
@@ -713,7 +752,7 @@ const updateEmployee = async () => {
         if (payload[key] === '') payload[key] = null
     }
     
-    await api.put(`/super-admin/profile-pegawai/${selectedEmployee.value.id}`, payload)
+    await api.put(`/super-admin/profile-pegawai/${selectedEmployee.value.profile_id}`, payload)
     ElMessage.success('Pegawai berhasil diperbarui')
     closeFormModal()
     fetchEmployees()
@@ -734,7 +773,7 @@ const updateEmployee = async () => {
 const deleteEmployee = async () => {
   try {
     deleting.value = true
-    await api.delete(`/super-admin/profile-pegawai/${selectedEmployee.value.id}`)
+    await api.delete(`/super-admin/profile-pegawai/${selectedEmployee.value.profile_id}`)
     ElMessage.success('Pegawai berhasil dihapus')
     closeDeleteModal()
     fetchEmployees()
@@ -754,25 +793,25 @@ const openEditModal = (employee) => {
     
     // Map Profile fields
     formData.value = {
-        nip: employee.profile?.nip,
-        nama_lengkap: employee.profile?.nama_lengkap,
-        gelar_depan_1: employee.profile?.gelar_depan_1,
-        gelar_depan_2: employee.profile?.gelar_depan_2,
-        gelar_belakang: employee.profile?.gelar_belakang,
-        tempat_lahir: employee.profile?.tempat_lahir,
-        tanggal_lahir: employee.profile?.tanggal_lahir,
-        jenis_kelamin: employee.profile?.jenis_kelamin,
+        nip: employee.profile?.nip || '',
+        nama_lengkap: employee.profile?.nama_lengkap || '',
+        gelar_depan_1: employee.profile?.gelar_depan_1 || '',
+        gelar_depan_2: employee.profile?.gelar_depan_2 || '',
+        gelar_belakang: employee.profile?.gelar_belakang || '',
+        tempat_lahir: employee.profile?.tempat_lahir || '',
+        tanggal_lahir: formatDateForInput(employee.profile?.tanggal_lahir),
+        jenis_kelamin: employee.profile?.jenis_kelamin || '',
         agama_id: employee.profile?.agama_id || '',
         pendidikan_id: employee.profile?.pendidikan_id || '',
         status_kawin_id: employee.profile?.status_kawin_id || '',
-        alamat_1_id: employee.profile?.alamat_1_id,
-        alamat_2_id: employee.profile?.alamat_2_id,
-        kode_pos: employee.profile?.kode_pos,
-        telepon: employee.profile?.telepon,
+        alamat_1_id: employee.profile?.alamat_1_id || '',
+        alamat_2_id: employee.profile?.alamat_2_id || '',
+        kode_pos: employee.profile?.kode_pos || '',
+        telepon: employee.profile?.telepon || '',
         golongan_darah_id: employee.profile?.golongan_darah_id || '',
-        bank_id: employee.profile?.bank_id,
-        tmt_cpns: employee.profile?.tmt_cpns,
-        tmt_pns: employee.profile?.tmt_pns,
+        bank_id: employee.profile?.bank_id || '',
+        tmt_cpns: formatDateForInput(employee.profile?.tmt_cpns),
+        tmt_pns: formatDateForInput(employee.profile?.tmt_pns),
         
         // Map Pegawai fields (Directly from employee object now)
         jenis_pegawai_id: employee.jenis_pegawai_id || '',
@@ -781,7 +820,26 @@ const openEditModal = (employee) => {
         unit_kerja_id: employee.unit_kerja_id || '',
         pangkat_id: employee.pangkat_id || '',
         golongan_id: employee.golongan_id || '',
-        tmt_jabatan: '', // Still empty as it's from Riwayat
+
+        // Map Riwayat Jabatan (ambil yang aktif, atau yang terakhir)
+        no_sk_jabatan: (() => {
+          const riwayat = employee.profile?.riwayat_jabatan
+          if (!riwayat || riwayat.length === 0) return ''
+          const aktif = riwayat.find(r => r.is_aktif) || riwayat[riwayat.length - 1]
+          return aktif?.no_sk || ''
+        })(),
+        tanggal_sk_jabatan: (() => {
+          const riwayat = employee.profile?.riwayat_jabatan
+          if (!riwayat || riwayat.length === 0) return ''
+          const aktif = riwayat.find(r => r.is_aktif) || riwayat[riwayat.length - 1]
+          return formatDateForInput(aktif?.tanggal_sk)
+        })(),
+        tmt_jabatan: (() => {
+          const riwayat = employee.profile?.riwayat_jabatan
+          if (!riwayat || riwayat.length === 0) return ''
+          const aktif = riwayat.find(r => r.is_aktif) || riwayat[riwayat.length - 1]
+          return formatDateForInput(aktif?.tmt_jabatan)
+        })(),
     }
 }
 
@@ -1009,6 +1067,17 @@ const formatDate = (dateString) => {
     month: 'short',
     day: 'numeric',
   })
+}
+
+// Convert ISO date string to YYYY-MM-DD for HTML date inputs
+const formatDateForInput = (dateString) => {
+  if (!dateString) return ''
+  const date = new Date(dateString)
+  if (isNaN(date.getTime())) return ''
+  const year = date.getFullYear()
+  const month = String(date.getMonth() + 1).padStart(2, '0')
+  const day = String(date.getDate()).padStart(2, '0')
+  return `${year}-${month}-${day}`
 }
 
 const formatTime = (dateString) => {
@@ -1448,6 +1517,37 @@ onMounted(() => {
 }
 .icon-circle.bg-indigo { background: #e0e7ff; color: #4338ca; }
 .detail-titles h3 { margin: 0 0 6px 0; font-size: 20px; color: #111827; }
+
+/* Detail Sections */
+.detail-section {
+  margin-bottom: 24px;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  overflow: hidden;
+}
+.detail-section:last-child { margin-bottom: 0; }
+
+.detail-section-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #f8fafc, #f1f5f9);
+  border-bottom: 1px solid #e5e7eb;
+  font-size: 14px;
+  font-weight: 700;
+  color: #334155;
+  text-transform: uppercase;
+  letter-spacing: 0.03em;
+}
+.detail-section-header i {
+  font-size: 14px;
+  color: #4f46e5;
+}
+
+.detail-section .detail-grid {
+  padding: 20px;
+}
 
 .detail-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
 .full-width { grid-column: 1 / -1; }

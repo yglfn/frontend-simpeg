@@ -89,9 +89,7 @@
               required
             />
           </div>
-          <p class="text-xs text-gray-500 mt-1">
-            • Gunakan email untuk user yang sudah terdaftar<br>
-          </p>
+
         </div>
 
         <div class="form-group">
