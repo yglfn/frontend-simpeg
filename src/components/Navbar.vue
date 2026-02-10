@@ -20,9 +20,6 @@
       <div class="user-info" ref="userInfoRef">
         <div class="user-info-horizontal" @click="toggleUserMenu">
           <div class="user-details-horizontal">
-            <p class="user-name">
-              <strong>{{ userName }}</strong>
-            </p>
             <div class="role-badge" :class="roleBadgeClass">{{ userRoleDisplay }}</div>
           </div>
           <div class="user-avatar">
@@ -38,7 +35,6 @@
               <div class="menu-user-avatar">{{ getUserInitials }}</div>
               <div class="menu-user-details">
                 <p class="menu-user-name">{{ userName }}</p>
-                <p class="menu-user-email">{{ user?.email || 'No email' }}</p>
                 <p class="menu-user-role">{{ userRoleDisplay }}</p>
               </div>
             </div>
@@ -66,7 +62,7 @@
 
           <!-- Debug info (only in development) -->
           <div v-if="debugMode" class="menu-debug">
-            <small> ID: {{ user?.id }} | Role: {{ user?.role }} </small>
+            <small> ID: {{ user?.id }} | Role ID: {{ user?.role_id }} </small>
           </div>
         </div>
       </div>
@@ -95,48 +91,17 @@ const user = computed(() => authStore.user)
 
 // User name for display
 const userName = computed(() => {
-  if (!user.value) return 'User'
-  return (
-    user.value.nama_lengkap || user.value.nama || user.value.username || user.value.email || 'User'
-  )
+  return user.value?.username || 'User'
 })
 
 // Check if user is admin
 const isAdmin = computed(() => {
-  // Prioritas 1: role_id (1 = Admin, 2 = Pegawai)
-  if (user.value?.role_id === 1) {
-    return true
-  }
-
-  // Prioritas 2: role string
-  if (user.value?.role) {
-    const roleLower = String(user.value.role).toLowerCase().trim()
-    return ['admin', 'administrator', 'super_admin'].includes(roleLower)
-  }
-
-  return false
+  return user.value?.role_id === 1 || user.value?.role?.kode_role === 'SUPER_ADMIN'
 })
 
 // Role display text
 const userRoleDisplay = computed(() => {
-  // Prioritas: role_id mapping
-  if (user.value?.role_id !== undefined && user.value?.role_id !== null) {
-    const roleMap = {
-      1: 'Administrator',
-      2: 'Pegawai',
-    }
-    return roleMap[user.value.role_id] || 'Pengguna'
-  }
-
-  // Fallback ke role string
-  if (user.value?.role) {
-    const roleLower = user.value.role.toLowerCase()
-    if (roleLower.includes('admin')) return 'Administrator'
-    if (roleLower.includes('pegawai')) return 'Pegawai'
-    return user.value.role
-  }
-
-  return 'Pengguna'
+  return user.value?.role_id !== undefined ? `ID: ${user.value.role_id}` : 'No Role'
 })
 
 // Role badge class for styling
@@ -315,8 +280,8 @@ defineExpose({
 }
 
 .logo-image {
-  width: 50px;
-  height: 50px;
+  width: 60px;
+  height: 60px;
   display: flex;
   align-items: center;
   justify-content: center;

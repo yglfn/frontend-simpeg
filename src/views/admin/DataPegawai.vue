@@ -201,7 +201,7 @@
           <div class="modal-header">
             <div class="header-title">
               <h2>Detail Pegawai</h2>
-              <span class="id-badge">ID: {{ selectedEmployee.id }}</span>
+              <span class="id-badge">ID: {{ selectedEmployee?.id }}</span>
             </div>
             <button class="btn-close" @click="closeDetailModal"><i class="fas fa-times"></i></button>
           </div>
@@ -212,8 +212,8 @@
                 <i class="fas fa-user-tie"></i>
               </div>
               <div class="detail-titles">
-                <h3>{{ selectedEmployee.profile?.nama_lengkap || 'Tidak Ada Nama' }}</h3>
-                <span class="badge badge-green">{{ selectedEmployee.status_kepegawaian?.nama_status || '-' }}</span>
+                <h3>{{ selectedEmployee?.profile?.nama_lengkap || 'Tidak Ada Nama' }}</h3>
+                <span class="badge badge-green">{{ selectedEmployee?.status_kepegawaian?.nama_status || '-' }}</span>
               </div>
             </div>
 
@@ -257,11 +257,31 @@
                 </div>
                 <div class="info-box">
                   <label>Golongan Darah</label>
-                  <p>{{ selectedEmployee.profile?.golongan_darah?.golongan_darah || '-' }}</p>
+                  <p>{{ selectedEmployee?.profile?.golongan_darah?.kode || '-' }}</p>
                 </div>
-                <div class="info-box full-width">
+                <div class="info-box">
+                  <label>Gelar Depan 1</label>
+                  <p>{{ selectedEmployee.profile?.gelar_depan_1 || '-' }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Gelar Depan 2</label>
+                  <p>{{ selectedEmployee.profile?.gelar_depan_2 || '-' }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Gelar Belakang</label>
+                  <p>{{ selectedEmployee.profile?.gelar_belakang || '-' }}</p>
+                </div>
+                <div class="info-box">
                   <label>Telepon</label>
                   <p>{{ selectedEmployee.profile?.telepon || '-' }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Kode Pos</label>
+                  <p>{{ selectedEmployee.profile?.kode_pos || '-' }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Bank</label>
+                  <p>{{ selectedEmployee.profile?.bank?.nama_bank || '-' }}</p>
                 </div>
               </div>
             </div>
@@ -304,6 +324,44 @@
                 <div class="info-box">
                   <label>TMT PNS</label>
                   <p>{{ formatDate(selectedEmployee.profile?.tmt_pns) }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- ========== SECTION: Riwayat Jabatan Terakhir ========== -->
+            <div class="detail-section" v-if="getActiveRiwayat(selectedEmployee)">
+              <div class="detail-section-header">
+                <i class="fas fa-file-contract"></i>
+                <span>Riwayat Jabatan Terakhir</span>
+              </div>
+              <div class="detail-grid">
+                <div class="info-box">
+                  <label>Nomor SK</label>
+                  <p>{{ getActiveRiwayat(selectedEmployee).no_sk || '-' }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Tanggal SK</label>
+                  <p>{{ formatDate(getActiveRiwayat(selectedEmployee).tanggal_sk) }}</p>
+                </div>
+                <div class="info-box">
+                  <label>TMT Jabatan</label>
+                  <p>{{ formatDate(getActiveRiwayat(selectedEmployee).tmt_jabatan) }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Bidang Studi</label>
+                  <p>{{ getActiveRiwayat(selectedEmployee).bidang_studi || '-' }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Keterangan Jabatan</label>
+                  <p>{{ getActiveRiwayat(selectedEmployee).keterangan_jabatan || '-' }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Diperbantukan</label>
+                  <p>{{ getActiveRiwayat(selectedEmployee).is_diperbantukan ? 'Ya' : 'Tidak' }}</p>
+                </div>
+                <div class="info-box">
+                  <label>Tunjangan Jabatan</label>
+                  <p>{{ getActiveRiwayat(selectedEmployee).tunjangan_jabatan ? 'Rp ' + Number(getActiveRiwayat(selectedEmployee).tunjangan_jabatan).toLocaleString('id-ID') : '-' }}</p>
                 </div>
               </div>
             </div>
@@ -498,7 +556,7 @@
                 <div class="form-group half">
                    <label for="jabatan_id">Jabatan <span class="text-danger">*</span></label>
                    <div class="select-wrapper fluid">
-                    <select id="jabatan_id" v-model="formData.jabatan_id" required>
+                    <select id="jabatan_id" v-model="formData.jabatan_id" @change="onJabatanChange" required>
                       <option value="">Pilih...</option>
                       <option v-for="pos in positions" :key="pos.id" :value="pos.id">{{ pos.nama_jabatan }}</option>
                     </select>
@@ -543,16 +601,48 @@
 
               <div class="form-row three-cols">
                 <div class="form-group">
-                   <label for="no_sk_jabatan">Nomor SK Jabatan <span class="text-danger">*</span></label>
-                   <input type="text" id="no_sk_jabatan" v-model="formData.no_sk_jabatan" required placeholder="Nomor SK" />
+                   <label for="no_sk_jabatan">Nomor SK Jabatan</label>
+                   <input type="text" id="no_sk_jabatan" v-model="formData.no_sk_jabatan" placeholder="Nomor SK" />
                 </div>
                 <div class="form-group">
-                   <label for="tanggal_sk_jabatan">Tanggal SK <span class="text-danger">*</span></label>
-                   <input type="date" id="tanggal_sk_jabatan" v-model="formData.tanggal_sk_jabatan" required />
+                   <label for="tanggal_sk_jabatan">Tanggal SK</label>
+                   <input type="date" id="tanggal_sk_jabatan" v-model="formData.tanggal_sk_jabatan" />
                 </div>
                 <div class="form-group">
-                   <label for="tmt_jabatan">TMT Jabatan <span class="text-danger">*</span></label>
-                   <input type="date" id="tmt_jabatan" v-model="formData.tmt_jabatan" required />
+                   <label for="tmt_jabatan">TMT Jabatan</label>
+                   <input type="date" id="tmt_jabatan" v-model="formData.tmt_jabatan" />
+                </div>
+              </div>
+
+              <div class="form-row">
+                <div class="form-group half">
+                   <label for="bidang_studi">Bidang Studi</label>
+                   <input type="text" id="bidang_studi" v-model="formData.bidang_studi" placeholder="Contoh: Pendidikan Agama Islam" />
+                </div>
+                <div class="form-group half">
+                   <label for="keterangan_jabatan">Keterangan Jabatan</label>
+                   <input type="text" id="keterangan_jabatan" v-model="formData.keterangan_jabatan" placeholder="Contoh: Dosen Tetap" />
+                </div>
+              </div>
+
+              <div class="form-row three-cols">
+                <div class="form-group">
+                  <label for="tunjangan_jabatan">Tunjangan Jabatan (Rp)</label>
+                  <input type="number" id="tunjangan_jabatan" v-model="formData.tunjangan_jabatan" placeholder="0" />
+                </div>
+                <div class="form-group">
+                  <label for="is_diperbantukan">Diperbantukan</label>
+                  <div class="select-wrapper fluid">
+                    <select id="is_diperbantukan" v-model="formData.is_diperbantukan">
+                      <option :value="false">Tidak</option>
+                      <option :value="true">Ya</option>
+                    </select>
+                    <i class="fas fa-chevron-down dropdown-icon"></i>
+                  </div>
+                </div>
+                <div class="form-group" v-if="formData.is_diperbantukan">
+                  <label for="keterangan_diperbantukan">Keterangan</label>
+                  <input type="text" id="keterangan_diperbantukan" v-model="formData.keterangan_diperbantukan" placeholder="Keterangan..." />
                 </div>
               </div>
 
@@ -613,6 +703,7 @@ const showDeleteModal = ref(false)
 const isEditMode = ref(false)
 const submitting = ref(false)
 const deleting = ref(false)
+const referencesLoaded = ref(false)
 
 // Data
 const employeeList = ref([])
@@ -784,62 +875,72 @@ const deleteEmployee = async () => {
   }
 }
 
-// Ensure openEditModal maps correctly
-const openEditModal = (employee) => {
-    selectedEmployee.value = employee
-    isEditMode.value = true
-    showFormModal.value = true
-    showDetailModal.value = false
-    
-    // Map Profile fields
-    formData.value = {
-        nip: employee.profile?.nip || '',
-        nama_lengkap: employee.profile?.nama_lengkap || '',
-        gelar_depan_1: employee.profile?.gelar_depan_1 || '',
-        gelar_depan_2: employee.profile?.gelar_depan_2 || '',
-        gelar_belakang: employee.profile?.gelar_belakang || '',
-        tempat_lahir: employee.profile?.tempat_lahir || '',
-        tanggal_lahir: formatDateForInput(employee.profile?.tanggal_lahir),
-        jenis_kelamin: employee.profile?.jenis_kelamin || '',
-        agama_id: employee.profile?.agama_id || '',
-        pendidikan_id: employee.profile?.pendidikan_id || '',
-        status_kawin_id: employee.profile?.status_kawin_id || '',
-        alamat_1_id: employee.profile?.alamat_1_id || '',
-        alamat_2_id: employee.profile?.alamat_2_id || '',
-        kode_pos: employee.profile?.kode_pos || '',
-        telepon: employee.profile?.telepon || '',
-        golongan_darah_id: employee.profile?.golongan_darah_id || '',
-        bank_id: employee.profile?.bank_id || '',
-        tmt_cpns: formatDateForInput(employee.profile?.tmt_cpns),
-        tmt_pns: formatDateForInput(employee.profile?.tmt_pns),
+const openEditModal = async (employee) => {
+    try {
+        isEditMode.value = true
+        showFormModal.value = true
+        // Set loading state if you have one specifically for modal, or just rely on async
         
-        // Map Pegawai fields (Directly from employee object now)
-        jenis_pegawai_id: employee.jenis_pegawai_id || '',
-        status_kepegawaian_id: employee.status_kepegawaian_id || '',
-        jabatan_id: employee.jabatan_id || '',
-        unit_kerja_id: employee.unit_kerja_id || '',
-        pangkat_id: employee.pangkat_id || '',
-        golongan_id: employee.golongan_id || '',
+        // Fetch full profile data
+        const response = await api.get(`/super-admin/profile-pegawai/${employee.profile_id}`)
+        const fullProfile = response.data.data
+        const fullPegawai = fullProfile.pegawai
+        const fullRiwayat = fullProfile.riwayat_jabatan
 
-        // Map Riwayat Jabatan (ambil yang aktif, atau yang terakhir)
-        no_sk_jabatan: (() => {
-          const riwayat = employee.profile?.riwayat_jabatan
-          if (!riwayat || riwayat.length === 0) return ''
-          const aktif = riwayat.find(r => r.is_aktif) || riwayat[riwayat.length - 1]
-          return aktif?.no_sk || ''
-        })(),
-        tanggal_sk_jabatan: (() => {
-          const riwayat = employee.profile?.riwayat_jabatan
-          if (!riwayat || riwayat.length === 0) return ''
-          const aktif = riwayat.find(r => r.is_aktif) || riwayat[riwayat.length - 1]
-          return formatDateForInput(aktif?.tanggal_sk)
-        })(),
-        tmt_jabatan: (() => {
-          const riwayat = employee.profile?.riwayat_jabatan
-          if (!riwayat || riwayat.length === 0) return ''
-          const aktif = riwayat.find(r => r.is_aktif) || riwayat[riwayat.length - 1]
-          return formatDateForInput(aktif?.tmt_jabatan)
-        })(),
+        selectedEmployee.value = { ...employee, profile: fullProfile } // Update checked employee with full data
+
+        if (!referencesLoaded.value) await fetchReferences()
+        
+        // Map Profile fields from full data
+        formData.value = {
+            nip: fullProfile.nip || '',
+            nama_lengkap: fullProfile.nama_lengkap || '',
+            email: fullProfile.user?.email || '', // Map email from user relation
+            gelar_depan_1: fullProfile.gelar_depan_1 || '',
+            gelar_depan_2: fullProfile.gelar_depan_2 || '',
+            gelar_belakang: fullProfile.gelar_belakang || '',
+            tempat_lahir: fullProfile.tempat_lahir || '',
+            tanggal_lahir: formatDateForInput(fullProfile.tanggal_lahir),
+            jenis_kelamin: fullProfile.jenis_kelamin || '',
+            agama_id: fullProfile.agama_id || '',
+            pendidikan_id: fullProfile.pendidikan_id || '',
+            status_kawin_id: fullProfile.status_kawin_id || '',
+            alamat_1_id: fullProfile.alamat_1_id || '', // Note: Alamat might need complex handling if using cascading dropdowns
+            alamat_2_id: fullProfile.alamat_2_id || '',
+            kode_pos: fullProfile.kode_pos || '',
+            telepon: fullProfile.telepon || '',
+            golongan_darah_id: fullProfile.golongan_darah_id || '',
+            bank_id: fullProfile.bank_id || '',
+            tmt_cpns: formatDateForInput(fullProfile.tmt_cpns),
+            tmt_pns: formatDateForInput(fullProfile.tmt_pns),
+            
+            // Map Pegawai fields
+            jenis_pegawai_id: fullPegawai?.jenis_pegawai_id || '',
+            status_kepegawaian_id: fullPegawai?.status_kepegawaian_id || '',
+            jabatan_id: fullPegawai?.jabatan_id || '',
+            unit_kerja_id: fullPegawai?.unit_kerja_id || '',
+            pangkat_id: fullPegawai?.pangkat_id || '',
+            golongan_id: fullPegawai?.golongan_id || '',
+
+            // Map Riwayat Jabatan
+            ...((() => {
+              const aktif = fullRiwayat?.find(r => r.is_aktif) || fullRiwayat?.[fullRiwayat.length - 1]
+              return {
+                no_sk_jabatan: aktif?.no_sk || '',
+                tanggal_sk_jabatan: formatDateForInput(aktif?.tanggal_sk),
+                tmt_jabatan: formatDateForInput(aktif?.tmt_jabatan),
+                bidang_studi: aktif?.bidang_studi || '',
+                keterangan_jabatan: aktif?.keterangan_jabatan || '',
+                is_diperbantukan: aktif?.is_diperbantukan || false,
+                keterangan_diperbantukan: aktif?.keterangan_diperbantukan || '',
+                tunjangan_jabatan: aktif?.tunjangan_jabatan || '',
+              }
+            })()),
+        }
+    } catch (error) {
+        console.error('Error fetching full detail for edit:', error)
+        ElMessage.error('Gagal memuat detail data untuk edit')
+        showFormModal.value = false
     }
 }
 
@@ -874,18 +975,51 @@ const resetForm = () => {
       tmt_jabatan: '',
       no_sk_jabatan: '',
       tanggal_sk_jabatan: '',
+      bidang_studi: '',
+      keterangan_jabatan: '',
+      is_diperbantukan: false,
+      keterangan_diperbantukan: '',
+      tunjangan_jabatan: '',
     }
 }
 
-const openAddModal = () => {
+const openAddModal = async () => {
   resetForm()
   isEditMode.value = false
   showFormModal.value = true
+  if (!referencesLoaded.value) await fetchReferences()
 }
 
-const viewDetail = (employee) => {
-    selectedEmployee.value = employee
-    showDetailModal.value = true
+const viewDetail = async (employee) => {
+    try {
+      loading.value = true
+      // Fetch detail lengkap dari API show
+      const response = await api.get(`/super-admin/profile-pegawai/${employee.profile_id}`)
+      if (response.data?.data) {
+        // Backend show returns Profile object, wrap it to match Pegawai structure
+        const profile = response.data.data
+        selectedEmployee.value = {
+          ...employee,
+          profile: profile,
+          jenis_pegawai: profile.pegawai?.jenis_pegawai,
+          status_kepegawaian: profile.pegawai?.status_kepegawaian,
+          golongan: profile.pegawai?.golongan,
+          pangkat: profile.pegawai?.pangkat,
+          jabatan: profile.pegawai?.jabatan,
+          unit_kerja: profile.pegawai?.unit_kerja,
+        }
+      } else {
+        selectedEmployee.value = employee
+      }
+      showDetailModal.value = true
+    } catch (error) {
+      console.error('Error loading detail:', error)
+      // Fallback ke data yang tersedia
+      selectedEmployee.value = employee
+      showDetailModal.value = true
+    } finally {
+      loading.value = false
+    }
 }
 
 const confirmDelete = (employee) => {
@@ -895,7 +1029,9 @@ const confirmDelete = (employee) => {
 
 const closeDetailModal = () => {
     showDetailModal.value = false
-    selectedEmployee.value = null
+    setTimeout(() => {
+      selectedEmployee.value = null
+    }, 300) // Wait for transition to finish
 }
 
 const closeFormModal = () => {
@@ -943,6 +1079,7 @@ const fetchReferences = async () => {
     maritalStatuses.value = maritalRes.data.data
     bloodTypes.value = bloodRes.data.data
     employeeTypes.value = typeRes.data.data
+    referencesLoaded.value = true
     
   } catch(error) {
     console.error('Error fetching references:', error)
@@ -958,8 +1095,8 @@ const fetchEmployees = async () => {
       page: pagination.value.currentPage,
       per_page: pagination.value.perPage,
       search: searchQuery.value,
-      jabatan_id: filterPosition.value || undefined,   // Mapped: position_id -> jabatan_id
-      unit_kerja_id: filterWorkUnit.value || undefined // Mapped: work_unit_id -> unit_kerja_id
+      jabatan_id: filterPosition.value,
+      unit_kerja_id: filterWorkUnit.value
     }
 
     const response = await api.get('/super-admin/profile-pegawai', { params })
@@ -1006,6 +1143,23 @@ const fetchEmployees = async () => {
 
 
 // ==================== UI FUNCTIONS ====================
+
+const onJabatanChange = () => {
+    const selectedJabatan = positions.value.find(p => p.id === formData.value.jabatan_id)
+    if (selectedJabatan) {
+        // Auto-fill tunjangan
+        if (selectedJabatan.tunjangan_jabatan) {
+            // Ensure we format it properly if needed, but simple assignment is fine for now
+            // The input type="number" so we pass the raw number
+            formData.value.tunjangan_jabatan = selectedJabatan.tunjangan_jabatan
+        }
+        
+        // Optional: Auto-fill keterangan if empty
+        if (!formData.value.keterangan_jabatan) {
+             formData.value.keterangan_jabatan = selectedJabatan.nama_jabatan
+        }
+    }
+}
 
 const refreshData = () => {
   searchQuery.value = ''
@@ -1089,6 +1243,13 @@ const formatTime = (dateString) => {
   })
 }
 
+const getActiveRiwayat = (employee) => {
+  if (!employee?.profile?.riwayat_jabatan) return null
+  const riwayat = employee.profile.riwayat_jabatan
+  if (riwayat.length === 0) return null
+  return riwayat.find(r => r.is_aktif) || riwayat[riwayat.length - 1]
+}
+
 const formatDateTime = (dateString) => {
   if (!dateString) return '-'
   const date = new Date(dateString)
@@ -1103,8 +1264,8 @@ const formatDateTime = (dateString) => {
 }
 
 onMounted(() => {
-  fetchReferences()
   fetchEmployees()
+  fetchReferences()
 })
 </script>
 
@@ -1127,7 +1288,7 @@ onMounted(() => {
 .app-container {
   background-color: #f3f4f6;
   min-height: 100vh;
-  padding: 32px;
+  padding: 12px 32px 32px 32px;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   color: #1f2937;
 }

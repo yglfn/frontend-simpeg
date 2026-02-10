@@ -846,7 +846,7 @@ onMounted(() => {
 .app-container {
   background-color: #f3f4f6;
   min-height: 100vh;
-  padding: 32px;
+  padding: 12px 32px 32px 32px;
   font-family: 'Inter', system-ui, -apple-system, sans-serif;
   color: #1f2937;
 }

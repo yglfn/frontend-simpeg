@@ -255,7 +255,7 @@ const getCategoryLabel = (category) => {
 .reference-data-container {
   min-height: 100vh;
   background-color: #f8fafc; /* Slate 50 */
-  padding: 2rem;
+  padding: 0.75rem 2rem 2rem 2rem;
   font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
   color: #1e293b;
 }
