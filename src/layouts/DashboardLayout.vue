@@ -3,7 +3,7 @@
     <!-- Navbar (Fixed Top) -->
     <Navbar />
 
-    <div class="flex flex-1 pt-[70px]">
+    <div class="flex flex-1 pt-[90px]">
       <!-- New Sidebar Component -->
       <Sidebar :collapsed="sidebarCollapsed" @toggle-collapse="toggleSidebar" />
 
@@ -28,7 +28,7 @@ import Sidebar from '@/components/Sidebar.vue';
 
 const sidebarCollapsed = ref(false);
 
-const toggleSidebar = (collapsed) => {
-  sidebarCollapsed.value = collapsed;
+const toggleSidebar = (state) => {
+  sidebarCollapsed.value = state;
 };
 </script>

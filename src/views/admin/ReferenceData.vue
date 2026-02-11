@@ -36,8 +36,8 @@
                 <option value="status-kawin">Status Pernikahan</option>
                 <option value="golongan-darah">Golongan Darah</option>
                 <option value="jenis-jabatan">Jenis Jabatan</option>
-                <option value="golongan">Golongan (Group)</option>
-                <option value="pangkat">Pangkat (Rank)</option>
+                <option value="golongan">Golongan </option>
+                <option value="pangkat">Pangkat </option>
                 <option value="tipe-dokumen">Tipe Dokumen</option>
                 <option value="jenis-pegawai">Jenis Pegawai</option>
                 <option value="status-kepegawaian">Status Kepegawaian</option>
@@ -173,8 +173,8 @@ const categoryLabels = {
   'status-kawin': 'Status Pernikahan',
   'golongan-darah': 'Golongan Darah',
   'jenis-jabatan': 'Jenis Jabatan',
-  'golongan': 'Golongan (Group)',
-  'pangkat': 'Pangkat (Rank)',
+  'golongan': 'Golongan',
+  'pangkat': 'Pangkat',
   'tipe-dokumen': 'Tipe Dokumen',
   'jenis-pegawai': 'Jenis Pegawai',
   'status-kepegawaian': 'Status Kepegawaian',

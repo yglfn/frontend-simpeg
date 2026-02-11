@@ -3,12 +3,13 @@
     class="sidebar"
     :class="{ collapsed: isCollapsed }"
   >
-    <!-- Sidebar Header dengan Toggle Button Saja -->
+    <!-- Sidebar Header dengan Hamburger Toggle -->
     <div class="sidebar-header">
-      <button class="toggle-button" @click="toggleSidebar" aria-label="Toggle Sidebar">
-        <i class="fas" :class="isCollapsed ? 'fa-chevron-right' : 'fa-chevron-left'"></i>
+      <button class="hamburger-toggle" @click="toggleSidebar">
+        <i class="fas fa-bars"></i>
       </button>
     </div>
+
 
     <!-- Sidebar Menu -->
     <nav class="sidebar-menu">
@@ -170,7 +171,8 @@ const props = defineProps({
 const emit = defineEmits(['toggle-collapse', 'menu-click'])
 
 // Reactive state
-const isCollapsed = ref(props.collapsed)
+// Reactive state
+const isCollapsed = computed(() => props.collapsed)
 
 // ==================== COMPUTED PROPERTIES ====================
 
@@ -193,9 +195,10 @@ const debugMode = computed(() => import.meta.env.DEV || false)
 // ==================== METHODS ====================
 
 const toggleSidebar = () => {
-  isCollapsed.value = !isCollapsed.value
-  emit('toggle-collapse', isCollapsed.value)
+  emit('toggle-collapse', !props.collapsed)
 }
+
+
 
 const handleMenuClick = (menuName) => {
   emit('menu-click', menuName)
@@ -218,7 +221,6 @@ onMounted(() => {
 // Watch for prop changes
 defineExpose({
   isSuperAdmin,
-  toggleSidebar,
 })
 </script>
 
@@ -226,7 +228,7 @@ defineExpose({
 /* Sidebar Base Styles - Warna tema konsisten dengan navbar */
 .sidebar {
   width: 250px;
-  background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
+  background: #12131f;
   color: white;
   height: 100vh;
   position: fixed;
@@ -238,8 +240,8 @@ defineExpose({
   flex-direction: column;
   overflow-y: auto;
   overflow-x: hidden;
-  border-right: 1px solid #34495e;
-  margin-top: 70px; /* Offset for Navbar */
+  border-right: 1px solid rgba(255, 255, 255, 0.07);
+  margin-top: 90px; /* Offset for Navbar */
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
 }
 
@@ -247,48 +249,45 @@ defineExpose({
   width: 70px;
 }
 
-/* Sidebar Header - Minimal */
+/* Sidebar Header */
 .sidebar-header {
-  padding: 20px 15px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(26, 37, 47, 0.8);
+  height: 60px;
   display: flex;
-  justify-content: center;
   align-items: center;
-  min-height: 60px;
-  backdrop-filter: blur(10px);
+  justify-content: flex-end; /* Expanded: Icon on right */
+  padding: 0 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
 }
 
-/* Toggle Button - Improved */
-.toggle-button {
-  background: rgba(52, 73, 94, 0.8);
-  border: 1px solid rgba(255, 255, 255, 0.15);
-  color: #ecf0f1;
-  font-size: 1rem;
+.sidebar.collapsed .sidebar-header {
+  justify-content: center; /* Collapsed: Icon centered */
+  padding: 0;
+}
+
+/* Hamburger Toggle */
+.hamburger-toggle {
+  background: transparent;
+  border: none;
+  color: #a0aec0;
+  font-size: 1.2rem;
   cursor: pointer;
-  padding: 10px;
-  border-radius: 8px;
-  transition: all 0.3s ease;
-  display: flex;
-  align-items: center;
-  justify-content: center;
   width: 40px;
   height: 40px;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  transition: all 0.2s;
 }
 
-.toggle-button:hover {
-  background: #3498db;
-  border-color: #3498db;
-  color: white;
-  transform: translateY(-2px);
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+.hamburger-toggle:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
 }
 
-.toggle-button:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
-}
+
+
+
 
 /* Sidebar Menu */
 .sidebar-menu {
@@ -336,16 +335,17 @@ defineExpose({
 
 /* Hover Effect */
 .menu-link:hover {
-  background: rgba(52, 73, 94, 0.6);
+  background: rgba(255, 255, 255, 0.05);
   color: white;
   padding-left: 20px;
 }
 
 /* Active Menu */
 .menu-item.active .menu-link {
-  background: linear-gradient(135deg, #3498db, #2980b9);
-  color: white;
-  box-shadow: 0 4px 12px rgba(52, 152, 219, 0.3);
+  background: rgba(124, 131, 245, 0.15);
+  color: #9da5f8;
+  box-shadow: none;
+  font-weight: 600;
 }
 
 .menu-item.active .menu-link::before {
@@ -354,8 +354,8 @@ defineExpose({
   left: 0;
   top: 0;
   bottom: 0;
-  width: 4px;
-  background: #fff;
+  width: 3px;
+  background: #7c83f5;
   border-radius: 0 4px 4px 0;
 }
 
@@ -369,12 +369,12 @@ defineExpose({
 }
 
 .menu-item.active .menu-link i {
-  color: white;
+  color: #7c83f5;
   transform: scale(1.1);
 }
 
 .menu-link:hover i {
-  color: #3498db;
+  color: #fff;
   transform: scale(1.1);
 }
 
@@ -396,7 +396,7 @@ defineExpose({
 }
 
 .sidebar.collapsed .menu-item.active .menu-link {
-  background: linear-gradient(135deg, #3498db, #2980b9);
+  background: rgba(124, 131, 245, 0.15);
 }
 
 .sidebar.collapsed .menu-item.active .menu-link::before {
@@ -435,10 +435,10 @@ defineExpose({
 /* Sidebar Footer */
 .sidebar-footer {
   padding: 20px 15px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
   font-size: 0.8rem;
   color: #bdc3c7;
-  background: rgba(26, 37, 47, 0.8);
+  background: #12131f;
   backdrop-filter: blur(10px);
 }
 
@@ -489,8 +489,8 @@ defineExpose({
 .sidebar-footer-collapsed {
   padding: 20px 0;
   text-align: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  background: rgba(26, 37, 47, 0.8);
+  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  background: #12131f;
   backdrop-filter: blur(10px);
 }
 
@@ -511,12 +511,12 @@ defineExpose({
 }
 
 .sidebar-menu::-webkit-scrollbar-thumb {
-  background: rgba(52, 152, 219, 0.5);
+  background: rgba(124, 131, 245, 0.5);
   border-radius: 4px;
 }
 
 .sidebar-menu::-webkit-scrollbar-thumb:hover {
-  background: rgba(52, 152, 219, 0.8);
+  background: rgba(124, 131, 245, 0.8);
 }
 
 /* Responsive */
@@ -556,18 +556,7 @@ defineExpose({
   }
 }
 
-/* Animation untuk toggle button rotation */
-.toggle-button i {
-  transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-}
 
-.sidebar.collapsed .toggle-button i {
-  transform: rotate(0);
-}
-
-.sidebar:not(.collapsed) .toggle-button i {
-  transform: rotate(180deg);
-}
 
 /* Menu item animation */
 .menu-link {

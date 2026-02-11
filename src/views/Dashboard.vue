@@ -118,7 +118,7 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <div 
               class="bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl p-4 cursor-pointer transition-colors flex items-center gap-4"
-              @click="goToModule('employees/create')"
+              @click="goToModule('super-admin/data-pegawai?action=add')"
             >
               <div class="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
                 <i class="fas fa-user-plus"></i>

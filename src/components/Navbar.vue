@@ -1,71 +1,87 @@
 <template>
   <header class="navbar">
-    <div class="container navbar-content">
-      <!-- Logo -->
-      <div class="logo">
-        <div class="logo-image">
-          <img src="https://ridergalau.id/wp-content/uploads/2025/12/Logo-UIN-Imam-Bonjol-Padang-RiderGalau.png" 
-               alt="Logo UIN Imam Bonjol Padang" 
-               class="logo-img" />
-        </div>
-        <div class="logo-text">
-          <div class="logo-main">
-            <h1>SIMPEG <span>UINIB</span></h1>
-            <p>Sistem Informasi Kepegawaian Terintegrasi</p>
+    <div class="navbar-content">
+
+      <!-- LEFT: Brand -->
+      <div class="navbar-left">
+        <div class="brand-wrapper" @click="goHome">
+          <div class="logo-wrap">
+            <img
+              src="https://ridergalau.id/wp-content/uploads/2025/12/Logo-UIN-Imam-Bonjol-Padang-RiderGalau.png"
+              alt="Logo UIN IB"
+              class="logo-img"
+            />
+          </div>
+          <div class="brand-text">
+            <h1 class="app-name">SIMPEG <span class="highlight">UINIB</span></h1>
+            <span class="app-desc">Sistem Kepegawaian Terintegrasi</span>
           </div>
         </div>
       </div>
 
-      <!-- User Info & Menu -->
-      <div class="user-info" ref="userInfoRef">
-        <div class="user-info-horizontal" @click="toggleUserMenu">
-          <div class="user-details-horizontal">
-            <div class="role-badge" :class="roleBadgeClass">{{ userRoleDisplay }}</div>
-          </div>
+      <!-- RIGHT: User -->
+      <div class="navbar-right">
+        <div
+          class="user-trigger"
+          :class="{ active: showUserMenu }"
+          @click="toggleUserMenu"
+          ref="userInfoRef"
+        >
           <div class="user-avatar">
-            {{ getUserInitials }}
+            <span v-if="!userPhoto">{{ getUserInitials }}</span>
+            <img v-else :src="userPhoto" alt="User" />
           </div>
-          <i class="fas fa-chevron-down user-dropdown-icon" :class="{ rotated: showUserMenu }"></i>
+
+          <div class="user-meta">
+            <span class="user-name">{{ userName }}</span>
+            <span class="user-role-badge" :class="roleBadgeClass">{{ userRoleLabel }}</span>
+          </div>
+
+          <i class="fas fa-chevron-down dropdown-arrow" :class="{ rotated: showUserMenu }"></i>
         </div>
 
-        <!-- User Menu Dropdown -->
-        <div v-if="showUserMenu" class="user-menu" ref="userMenuRef">
-          <div class="menu-header">
-            <div class="menu-user-info">
-              <div class="menu-user-avatar">{{ getUserInitials }}</div>
-              <div class="menu-user-details">
-                <p class="menu-user-name">{{ userName }}</p>
-                <p class="menu-user-role">{{ userRoleDisplay }}</p>
+        <transition name="slide-fade">
+          <div v-if="showUserMenu" class="user-dropdown" ref="userMenuRef">
+            <!-- Dropdown Header -->
+            <div class="dropdown-header">
+              <div class="header-avatar">{{ getUserInitials }}</div>
+              <div class="header-info">
+                <p class="header-name">{{ userName }}</p>
+                <p class="header-role">{{ userRoleLabel }}</p>
+              </div>
+            </div>
+
+            <!-- Dropdown Body -->
+            <div class="dropdown-body">
+              <!-- <div class="dropdown-section-label">MENU</div> -->
+
+              <!-- <template v-if="isAdmin">
+                <div class="dropdown-item" @click="goToAdminDashboard">
+                  <i class="fas fa-th-large"></i>
+                  <span>Dashboard Admin</span>
+                </div>
+                <div class="dropdown-item" @click="goToAdminUsers">
+                  <i class="fas fa-users-cog"></i>
+                  <span>Kelola Pengguna</span>
+                </div>
+              </template> -->
+
+              <!-- <div class="dropdown-item" @click="goToProfile">
+                <i class="fas fa-user-circle"></i>
+                <span>Profil Saya</span>
+              </div> -->
+
+              <div class="dropdown-divider"></div>
+
+              <div class="dropdown-item danger" @click="handleLogout">
+                <i class="fas fa-sign-out-alt"></i>
+                <span>Keluar Aplikasi</span>
               </div>
             </div>
           </div>
-
-          <div class="menu-divider"></div>
-
-          <!-- Menu items for Admin -->
-          <div v-if="isAdmin" class="menu-item" @click="goToAdminDashboard">
-            <i class="fas fa-tachometer-alt"></i>
-            <span>Dashboard Admin</span>
-          </div>
-
-          <div v-if="isAdmin" class="menu-item" @click="goToAdminUsers">
-            <i class="fas fa-users"></i>
-            <span>Kelola Pengguna</span>
-          </div>
-
-          <div class="menu-divider"></div>
-
-          <div class="menu-item logout" @click="handleLogout">
-            <i class="fas fa-sign-out-alt"></i>
-            <span>Keluar</span>
-          </div>
-
-          <!-- Debug info (only in development) -->
-          <div v-if="debugMode" class="menu-debug">
-            <small> ID: {{ user?.id }} | Role ID: {{ user?.role_id }} </small>
-          </div>
-        </div>
+        </transition>
       </div>
+
     </div>
   </header>
 </template>
@@ -79,566 +95,443 @@ import { ElMessageBox } from 'element-plus'
 const router = useRouter()
 const authStore = useAuthStore()
 
-// Refs
 const userInfoRef = ref(null)
 const userMenuRef = ref(null)
 const showUserMenu = ref(false)
 
-// ==================== COMPUTED PROPERTIES ====================
-
-// User object
 const user = computed(() => authStore.user)
+const userName = computed(() => user.value?.username || 'Pengguna')
+const userPhoto = computed(() => user.value?.photo_url || null)
 
-// User name for display
-const userName = computed(() => {
-  return user.value?.username || 'User'
-})
-
-// Check if user is admin
 const isAdmin = computed(() => {
-  return user.value?.role_id === 1 || user.value?.role?.kode_role === 'SUPER_ADMIN'
+  return user.value?.role_id === 1 || String(user.value?.role?.kode_role).includes('ADMIN')
 })
 
-// Role display text
-const userRoleDisplay = computed(() => {
-  return user.value?.role_id !== undefined ? `ID: ${user.value.role_id}` : 'No Role'
+const userRoleLabel = computed(() => {
+  if (user.value?.role_id === 1) return 'Super Admin'
+  if (user.value?.role_id === 2) return 'Pegawai'
+  return user.value?.role || 'User'
 })
 
-// Role badge class for styling
 const roleBadgeClass = computed(() => {
   const roleId = user.value?.role_id
   if (roleId === 1) return 'badge-admin'
   if (roleId === 2) return 'badge-pegawai'
-
-  // Fallback berdasarkan nama role
-  const role = user.value?.role
-  if (role?.includes('admin')) return 'badge-admin'
-  if (role?.includes('pegawai')) return 'badge-pegawai'
-
   return 'badge-default'
 })
 
-// User initials
 const getUserInitials = computed(() => {
   const name = userName.value
-  const initials = name
+  return name
     .split(' ')
-    .map((word) => word.charAt(0))
+    .map((w) => w.charAt(0))
     .join('')
     .toUpperCase()
-    .substring(0, 2)
-  return initials || 'US'
+    .substring(0, 2) || 'US'
 })
 
-// Debug mode
-const debugMode = computed(() => import.meta.env.DEV || false)
-
-// ==================== METHODS ====================
-
-const toggleUserMenu = (event) => {
-  if (event) {
-    event.stopPropagation()
-  }
+const toggleUserMenu = (e) => {
+  e?.stopPropagation()
   showUserMenu.value = !showUserMenu.value
-
-  // Debug info ketika menu dibuka
-  if (showUserMenu.value && debugMode.value) {
-    console.log('=== NAVBAR DEBUG INFO ===')
-    console.log('User object:', user.value)
-    console.log('Role ID:', user.value?.role_id)
-    console.log('Role string:', user.value?.role)
-    console.log('isAdmin:', isAdmin.value)
-    console.log('userRoleDisplay:', userRoleDisplay.value)
-    console.log('========================')
-  }
 }
 
+const goHome = () => router.push('/')
+
 const goToProfile = () => {
-  if (isAdmin.value) {
-    router.push('/admin/profile')
-  } else {
-    router.push('/pegawai/profile')
-  }
+  router.push(isAdmin.value ? '/admin/profile' : '/pegawai/profile')
   showUserMenu.value = false
 }
 
 const goToAdminDashboard = () => {
-  if (isAdmin.value) {
-    router.push('/super-admin/dashboard')
-    showUserMenu.value = false
-  }
+  router.push('/super-admin/dashboard')
+  showUserMenu.value = false
 }
 
 const goToAdminUsers = () => {
-  if (isAdmin.value) {
-    router.push('/admin/users')
-    showUserMenu.value = false
-  }
+  router.push('/admin/users')
+  showUserMenu.value = false
 }
 
 const handleLogout = async () => {
   try {
-    await ElMessageBox.confirm('Apakah Anda yakin ingin keluar dari sistem?', 'Konfirmasi Logout', {
-      confirmButtonText: 'Ya, Keluar',
-      cancelButtonText: 'Batal',
-      type: 'warning',
-      customClass: 'logout-confirm-modal',
-    })
-
+    await ElMessageBox.confirm(
+      'Apakah Anda yakin ingin mengakhiri sesi?',
+      'Konfirmasi Logout',
+      {
+        confirmButtonText: 'Ya, Keluar',
+        cancelButtonText: 'Batal',
+        type: 'warning',
+      }
+    )
     await authStore.logout()
     router.push('/login')
-  } catch (error) {
-    // User cancelled
-    console.log('Logout cancelled')
+  } catch (e) {
+    // Cancelled
   }
   showUserMenu.value = false
 }
 
-// Close menu when clicking outside
-const handleClickOutside = (event) => {
-  if (userInfoRef.value && !userInfoRef.value.contains(event.target)) {
+const handleClickOutside = (e) => {
+  if (
+    userInfoRef.value && !userInfoRef.value.contains(e.target) &&
+    userMenuRef.value && !userMenuRef.value.contains(e.target)
+  ) {
     showUserMenu.value = false
   }
 }
 
-// Handle escape key
-const handleKeyDown = (event) => {
-  if (event.key === 'Escape') {
-    showUserMenu.value = false
-  }
-}
-
-// ==================== LIFECYCLE HOOKS ====================
-
-onMounted(() => {
-  document.addEventListener('click', handleClickOutside)
-  document.addEventListener('keydown', handleKeyDown)
-
-  // Debug on mount
-  if (debugMode.value) {
-    console.log('Navbar mounted - User data:', user.value)
-    console.log('LocalStorage user:', localStorage.getItem('user'))
-  }
-})
-
-onUnmounted(() => {
-  document.removeEventListener('click', handleClickOutside)
-  document.removeEventListener('keydown', handleKeyDown)
-})
-
-// Expose methods if needed
-defineExpose({
-  toggleUserMenu,
-  goToProfile,
-  handleLogout,
-  isAdmin,
-  userRoleDisplay,
-})
+onMounted(() => document.addEventListener('click', handleClickOutside))
+onUnmounted(() => document.removeEventListener('click', handleClickOutside))
 </script>
 
 <style scoped>
-/* Navbar Base Styles */
-.navbar {
-  background: linear-gradient(135deg, #2c3e50 0%, #1a252f 100%);
-  color: white;
-  padding: 12px 0;
-  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.1);
-  position: sticky;
-  top: 0;
-  z-index: 1000;
-  height: 70px;
-  width: 100%;
-}
+@import url('https://fonts.googleapis.com/css2?family=Sora:wght@300;400;500;600;700&display=swap');
 
-.container {
-  max-width: 1400px;
-  margin: 0 auto;
-  padding: 0 20px;
-  width: 100%;
+/* =============================================
+   NAVBAR — tema dark selaras dengan sidebar
+   rail-bg  : #12131f   (sidebar icon rail)
+   panel-bg : #1a1c2e   (sidebar label panel)
+   ============================================= */
+
+.navbar {
+  height: 90px;
+  background: #12131f;
+  border-bottom: 1px solid rgba(255,255,255,0.07);
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  z-index: 1500;
+  display: flex;
+  align-items: center;
+  font-family: 'Sora', sans-serif;
+  box-shadow: 0 1px 0 rgba(255,255,255,0.04);
 }
 
 .navbar-content {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  height: 100%;
   width: 100%;
-}
-
-/* Logo */
-.logo {
+  padding: 0 24px;
   display: flex;
   align-items: center;
-  gap: 15px;
+  justify-content: space-between;
+}
+
+/* ---- Brand ---- */
+.navbar-left {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.hamburger-btn {
+  background: transparent;
+  border: none;
+  color: #a0aec0;
+  font-size: 1.2rem;
   cursor: pointer;
-  user-select: none;
-  flex-shrink: 0;
-}
-
-.logo:hover {
-  opacity: 0.9;
-}
-
-.logo-image {
-  width: 60px;
-  height: 60px;
+  padding: 8px;
+  border-radius: 8px;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: white;
-  border-radius: 8px;
-  padding: 5px;
+  transition: all 0.2s;
+}
+
+.hamburger-btn:hover {
+  background: rgba(255, 255, 255, 0.1);
+  color: #fff;
+}
+
+.brand-wrapper {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  cursor: pointer;
+  padding: 6px 10px 6px 0;
+  border-radius: 10px;
+  transition: opacity 0.2s;
+}
+
+.brand-wrapper:hover { opacity: 0.85; }
+
+.logo-wrap {
+  width: 54px;
+  height: 54px;
+  border-radius: 12px;
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.1);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
   flex-shrink: 0;
 }
 
 .logo-img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+  /* filter agar logo terlihat di background gelap */
+  filter: brightness(0) invert(1);
+}
+
+.brand-text {
+  display: flex;
+  flex-direction: column;
+  line-height: 1;
+}
+
+.app-name {
+  font-size: 1.25rem;
+  font-weight: 700;
+  color: #e8eaf2;
+  margin: 0;
+  letter-spacing: -0.3px;
+  line-height: 1.2;
+}
+
+.app-name .highlight {
+  color: #7c83f5;   /* indigo terang di atas gelap */
+}
+
+.app-desc {
+  font-size: 0.75rem;
+  color: #ecf0f1;
+  font-weight: 400;
+  margin-top: 2px;
+  white-space: nowrap;
+}
+
+/* ---- User Trigger ---- */
+.navbar-right {
+  display: flex;
+  align-items: center;
+  position: relative;
+}
+
+.user-trigger {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 5px 10px 5px 6px;
+  border-radius: 10px;
+  cursor: pointer;
+  border: 1px solid transparent;
+  transition: background 0.2s, border-color 0.2s;
+}
+
+.user-trigger:hover,
+.user-trigger.active {
+  background: rgba(255,255,255,0.06);
+  border-color: rgba(255,255,255,0.08);
+}
+
+.user-avatar {
+  width: 36px;
+  height: 36px;
+  border-radius: 9px;
+  background: linear-gradient(135deg, #5b5ff0, #7c83f5);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  font-size: 0.85rem;
+  flex-shrink: 0;
+  overflow: hidden;
+}
+
+.user-avatar img {
   width: 100%;
   height: 100%;
-  object-fit: contain;
+  object-fit: cover;
 }
 
-.logo-main {
+.user-meta {
   display: flex;
   flex-direction: column;
-  justify-content: center;
-}
-
-.logo-text h1 {
-  font-size: 1.6rem;
-  font-weight: 600;
-  margin-bottom: 2px;
-  line-height: 1.2;
-  display: flex;
-  align-items: center;
-  flex-wrap: wrap;
-}
-
-.logo-text span {
-  color: #3498db;
-  font-weight: 500;
-  margin-left: 5px;
-}
-
-.logo-text p {
-  font-size: 0.85rem;
-  opacity: 0.9;
-  margin: 0;
-  color: rgba(255, 255, 255, 0.8);
-  line-height: 1.1;
-}
-
-/* User Info Horizontal Layout */
-.user-info {
-  position: relative;
-  height: 100%;
-  display: flex;
-  align-items: center;
-}
-
-.user-info-horizontal {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  cursor: pointer;
-  padding: 8px 12px;
-  border-radius: 8px;
-  transition: background-color 0.3s;
-  height: 100%;
-  align-items: center;
-}
-
-.user-info-horizontal:hover {
-  background-color: rgba(255, 255, 255, 0.1);
-}
-
-/* User Details Horizontal */
-.user-details-horizontal {
-  display: flex;
-  flex-direction: column;
-  align-items: flex-end;
-  text-align: right;
-  min-width: 0;
+  align-items: flex-start;
 }
 
 .user-name {
-  margin: 0;
-  font-size: 0.9rem;
+  font-size: 0.84rem;
+  font-weight: 600;
+  color: #c8cce0;
+  line-height: 1.2;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 150px;
 }
 
-/* Role Badge - Simplified for 2 roles */
-.role-badge {
-  padding: 4px 10px;
-  border-radius: 12px;
-  font-size: 0.75rem;
-  font-weight: 500;
-  display: inline-block;
+.user-role-badge {
+  font-size: 0.62rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  padding: 1px 7px;
+  border-radius: 5px;
+  margin-top: 3px;
+  letter-spacing: 0.4px;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  max-width: 120px;
-  margin-top: 4px;
-  color: white;
-  text-align: center;
 }
 
 .badge-admin {
-  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  background: rgba(124,131,245,0.18);
+  color: #9da5f8;
 }
 
 .badge-pegawai {
-  background: linear-gradient(135deg, #3498db, #2980b9);
+  background: rgba(255,255,255,0.07);
+  color: #6b7090;
 }
 
 .badge-default {
-  background: linear-gradient(135deg, #95a5a6, #7f8c8d);
+  background: rgba(255,255,255,0.05);
+  color: #6b7090;
 }
 
-/* User Avatar */
-.user-avatar {
-  width: 40px;
-  height: 40px;
-  background: linear-gradient(135deg, #3498db, #2ecc71);
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: bold;
-  font-size: 1rem;
-  color: white;
-  transition: transform 0.3s;
-  flex-shrink: 0;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-}
-
-.user-avatar:hover {
-  transform: scale(1.1);
-}
-
-/* Dropdown Icon */
-.user-dropdown-icon {
-  font-size: 0.9rem;
-  opacity: 0.8;
-  transition: transform 0.3s;
+.dropdown-arrow {
+  color: #4a5080;
+  font-size: 0.72rem;
+  transition: transform 0.25s ease;
+  margin-left: 2px;
   flex-shrink: 0;
 }
 
-.user-dropdown-icon.rotated {
-  transform: rotate(180deg);
-}
+.dropdown-arrow.rotated { transform: rotate(180deg); }
 
-/* User Menu Dropdown */
-.user-menu {
+/* ---- Dropdown ---- */
+.user-dropdown {
   position: absolute;
-  top: calc(100% + 5px);
+  top: calc(100% + 10px);
   right: 0;
-  background: white;
-  border-radius: 8px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-  min-width: 280px;
-  z-index: 1001;
+  width: 256px;
+  background: #1a1c2e;
+  border: 1px solid rgba(255,255,255,0.09);
+  border-radius: 12px;
+  box-shadow: 0 16px 40px rgba(0,0,0,0.45);
   overflow: hidden;
-  animation: fadeIn 0.2s ease-out;
-  border: 1px solid #e0e0e0;
+  z-index: 2000;
 }
 
-@keyframes fadeIn {
-  from {
-    opacity: 0;
-    transform: translateY(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Menu Header */
-.menu-header {
+.dropdown-header {
   padding: 16px;
-  background: linear-gradient(135deg, #f8f9fa, #e9ecef);
-  border-bottom: 1px solid #e0e0e0;
-}
-
-.menu-user-info {
   display: flex;
   align-items: center;
-  gap: 12px;
+  gap: 11px;
+  background: rgba(255,255,255,0.03);
+  border-bottom: 1px solid rgba(255,255,255,0.07);
 }
 
-.menu-user-avatar {
-  width: 50px;
-  height: 50px;
-  background: linear-gradient(135deg, #3498db, #2ecc71);
-  border-radius: 50%;
+.header-avatar {
+  width: 44px;
+  height: 44px;
+  border-radius: 10px;
+  background: linear-gradient(135deg, #5b5ff0, #7c83f5);
+  color: #fff;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-weight: bold;
-  font-size: 1.2rem;
-  color: white;
+  font-weight: 800;
+  font-size: 1.05rem;
   flex-shrink: 0;
 }
 
-.menu-user-details {
-  flex: 1;
-  min-width: 0;
-}
+.header-info { flex: 1; overflow: hidden; }
 
-.menu-user-name {
-  font-weight: 600;
-  color: #2c3e50;
-  margin: 0 0 4px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.menu-user-email {
-  font-size: 0.8rem;
-  color: #7f8c8d;
-  margin: 0 0 2px 0;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-.menu-user-role {
-  font-size: 0.75rem;
-  background: #3498db;
-  color: white;
-  padding: 2px 8px;
-  border-radius: 10px;
-  display: inline-block;
+.header-name {
   margin: 0;
+  font-weight: 600;
+  color: #c8cce0;
+  font-size: 0.88rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
-/* Menu Items */
-.menu-item {
-  padding: 12px 16px;
+.header-role {
+  margin: 3px 0 0;
+  font-size: 0.72rem;
+  color: #4a5080;
+}
+
+.dropdown-body { padding: 8px; }
+
+.dropdown-section-label {
+  padding: 6px 10px 4px;
+  font-size: 0.6rem;
+  font-weight: 600;
+  color: #3e4260;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.dropdown-item {
   display: flex;
   align-items: center;
-  gap: 12px;
-  color: #333;
+  gap: 10px;
+  padding: 9px 12px;
+  border-radius: 8px;
+  color: #8b8fa8;
+  font-size: 0.84rem;
+  font-weight: 400;
   cursor: pointer;
-  transition: background-color 0.2s;
-  font-size: 0.9rem;
-  user-select: none;
-  border-left: 3px solid transparent;
+  margin-bottom: 2px;
+  transition: background 0.18s, color 0.18s;
 }
 
-.menu-item:hover {
-  background-color: #f5f5f5;
-  border-left-color: #3498db;
-}
-
-.menu-item i {
+.dropdown-item i {
   width: 16px;
-  color: #666;
   text-align: center;
-  font-size: 1rem;
+  font-size: 0.85rem;
+  color: #4a5080;
+  transition: color 0.18s;
+  flex-shrink: 0;
 }
 
-.menu-item.logout {
-  color: #e74c3c;
-  border-left-color: #e74c3c;
+.dropdown-item:hover {
+  background: rgba(255,255,255,0.06);
+  color: #c0c4d8;
 }
 
-.menu-item.logout:hover {
-  background-color: rgba(231, 76, 60, 0.1);
-}
+.dropdown-item:hover i { color: #7c83f5; }
 
-.menu-item.logout i {
-  color: #e74c3c;
-}
-
-/* Menu Divider */
-.menu-divider {
+.dropdown-divider {
   height: 1px;
-  background-color: #eee;
-  margin: 4px 0;
+  background: rgba(255,255,255,0.07);
+  margin: 6px 0;
 }
 
-/* Debug Info */
-.menu-debug {
-  padding: 8px 16px;
-  background: #f8f9fa;
-  border-top: 1px solid #eee;
-  font-size: 0.7rem;
-  color: #95a5a6;
-  text-align: center;
+.dropdown-item.danger { color: #f87171; }
+.dropdown-item.danger i { color: #f87171; }
+.dropdown-item.danger:hover { background: rgba(248,113,113,0.08); }
+.dropdown-item.danger:hover i { color: #f87171; }
+
+/* ---- Transition ---- */
+.slide-fade-enter-active {
+  transition: all 0.2s cubic-bezier(0.16,1,0.3,1);
+}
+.slide-fade-leave-active {
+  transition: all 0.15s ease;
+}
+.slide-fade-enter-from,
+.slide-fade-leave-to {
+  transform: translateY(-8px);
+  opacity: 0;
 }
 
-/* Responsive */
+/* ---- Responsive ---- */
 @media (max-width: 768px) {
-  .logo-text h1 {
-    font-size: 1.3rem;
-    flex-wrap: wrap;
-  }
+  .app-desc { display: none; }
 
-  .logo-text span {
-    margin-left: 0;
-    display: block;
-  }
+  .user-meta { display: none; }
 
-  .logo-text p {
-    font-size: 0.75rem;
-  }
+  .dropdown-arrow { display: none; }
 
-  .logo-image {
-    width: 45px;
-    height: 45px;
-  }
-
-  .user-details-horizontal {
-    max-width: 100px;
-  }
-
-  .user-name {
-    font-size: 0.8rem;
-  }
-
-  .role-badge {
-    font-size: 0.7rem;
-    padding: 2px 6px;
-    max-width: 100px;
-  }
-
-  .user-info-horizontal {
-    padding: 8px;
-  }
-
-  .user-menu {
-    min-width: 250px;
-    right: -10px;
-  }
-}
-
-@media (max-width: 480px) {
-  .logo-image {
-    width: 40px;
-    height: 40px;
-  }
-
-  .logo-text h1 {
-    font-size: 1.1rem;
+  .user-trigger {
+    padding: 4px;
+    border-radius: 50%;
   }
 
   .user-avatar {
-    width: 36px;
-    height: 36px;
-    font-size: 0.9rem;
-  }
-
-  .logo-text p {
-    display: none;
-  }
-
-  .user-details-horizontal {
-    display: none;
+    border-radius: 50%;
   }
 }
 </style>
