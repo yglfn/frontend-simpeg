@@ -341,11 +341,27 @@
             <h3>Hapus Jabatan?</h3>
             <p class="modal-desc">
               Anda akan menghapus jabatan <strong>{{ selectedJabatan?.nama_jabatan }}</strong>.
-              Tindakan ini tidak dapat dibatalkan.
+              Tindakan ini <strong>tidak dapat dibatalkan</strong>.
             </p>
+            
+            <div class="form-group" style="margin: 15px 0;">
+                <label class="d-block mb-2 text-muted small">Ketik <strong>{{ selectedJabatan?.nama_jabatan || 'KONFIRMASI' }}</strong> untuk melanjutkan:</label>
+                <input 
+                    type="text" 
+                    v-model="deleteConfirmationInput" 
+                    class="form-control text-center" 
+                    placeholder="Ketik disini..." 
+                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;"
+                />
+            </div>
+
             <div class="modal-actions-center">
               <button class="btn btn-secondary" @click="closeDeleteModal">Batal</button>
-              <button class="btn btn-danger" @click="deleteJabatan" :disabled="deleting">
+              <button 
+                class="btn btn-danger" 
+                @click="deleteJabatan" 
+                :disabled="deleting || deleteConfirmationInput !== (selectedJabatan?.nama_jabatan || 'KONFIRMASI')"
+              >
                 {{ deleting ? 'Menghapus...' : 'Ya, Hapus' }}
               </button>
             </div>
@@ -683,8 +699,11 @@ const viewDetail = (jabatan) => {
   showDetailModal.value = true
 }
 
+const deleteConfirmationInput = ref('')
+
 const confirmDelete = (jabatan) => {
   selectedJabatan.value = jabatan
+  deleteConfirmationInput.value = ''
   showDeleteModal.value = true
 }
 
@@ -700,6 +719,7 @@ const closeFormModal = () => {
 
 const closeDeleteModal = () => {
   showDeleteModal.value = false
+  deleteConfirmationInput.value = ''
   selectedJabatan.value = null
 }
 
@@ -1212,7 +1232,7 @@ onMounted(() => {
   background: rgba(17, 24, 39, 0.4);
   backdrop-filter: blur(4px);
   display: flex; align-items: center; justify-content: center;
-  z-index: 1000; padding: 16px;
+  z-index: 2000; padding: 16px;
 }
 .modal-card {
   background: white; border-radius: 16px;

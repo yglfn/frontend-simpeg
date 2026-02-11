@@ -331,15 +331,31 @@
                     <h3>Hapus Unit?</h3>
                     <p class="modal-desc">
                         Anda akan menghapus <strong>{{ selectedUnit?.nama_unit }}</strong>. 
-                        Tindakan ini tidak dapat dibatalkan.
+                        Tindakan ini <strong>tidak dapat dibatalkan</strong>.
                     </p>
+                    
+                    <div class="form-group" style="margin: 15px 0;">
+                        <label class="d-block mb-2 text-muted small">Ketik <strong>{{ selectedUnit?.nama_unit || 'KONFIRMASI' }}</strong> untuk melanjutkan:</label>
+                        <input 
+                            type="text" 
+                            v-model="deleteConfirmationInput" 
+                            class="form-control text-center" 
+                            placeholder="Ketik disini..." 
+                            style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;"
+                        />
+                    </div>
+
                     <div v-if="selectedUnit?.children?.length > 0" class="alert-box">
                         <i class="fas fa-exclamation-circle"></i>
                         <span>Unit ini memiliki {{ selectedUnit.children.length }} sub-unit.</span>
                     </div>
                     <div class="modal-actions-center">
                         <button class="btn btn-secondary" @click="closeDeleteModal">Batal</button>
-                        <button class="btn btn-danger" @click="deleteUnitKerja" :disabled="deleting">
+                        <button 
+                            class="btn btn-danger" 
+                            @click="deleteUnitKerja" 
+                            :disabled="deleting || deleteConfirmationInput !== (selectedUnit?.nama_unit || 'KONFIRMASI')"
+                        >
                             {{ deleting ? 'Menghapus...' : 'Ya, Hapus' }}
                         </button>
                     </div>
@@ -570,8 +586,11 @@ const viewDetail = async (unit) => {
   showDetailModal.value = true
 }
 
+const deleteConfirmationInput = ref('')
+
 const confirmDelete = (unit) => {
   selectedUnit.value = unit
+  deleteConfirmationInput.value = ''
   showDeleteModal.value = true
 }
 
@@ -587,6 +606,7 @@ const closeFormModal = () => {
 
 const closeDeleteModal = () => {
   showDeleteModal.value = false
+  deleteConfirmationInput.value = ''
   selectedUnit.value = null
 }
 
@@ -1116,7 +1136,7 @@ onMounted(() => {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1000;
+  z-index: 2000;
   padding: 16px;
 }
 

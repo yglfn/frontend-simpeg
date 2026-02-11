@@ -96,7 +96,7 @@
             <thead>
               <tr>
                 <th width="50">No</th>
-                <th>NIP</th>
+                <th>NIP / Identitas</th>
                 <th>Nama Pegawai</th>
                 <th>Jabatan</th>
                 <th>Unit Kerja</th>
@@ -125,7 +125,7 @@
                 <td>
                   <div class="cell-primary">
                     <span class="font-bold text-dark">{{ employee.profile?.nama_lengkap || employee.user?.username || 'Tidak Ada Nama' }}</span>
-                    <span class="small-note text-muted">{{ employee.profile?.nip || '-' }}<br>{{ employee.user?.email || '-' }}</span>
+                    <span class="small-note text-muted">{{ employee.user?.email || '-' }}</span>
                   </div>
                 </td>
                 <td>
@@ -225,7 +225,7 @@
               </div>
               <div class="detail-grid">
                 <div class="info-box">
-                  <label>NIP</label>
+                  <label>NIP / Identitas</label>
                   <p>{{ selectedEmployee.profile?.nip || '-' }}</p>
                 </div>
                 <div class="info-box">
@@ -402,31 +402,22 @@
           </div>
           <div class="modal-body">
             <form @submit.prevent="submitForm" class="modern-form">
-              <!-- Data User -->
-              <div class="form-section-title">Informasi Akun</div>
-              
+              <!-- Data User Note -->
               <div class="info-alert" v-if="!isEditMode">
                 <i class="fas fa-info-circle"></i>
                 <p>
                   <strong>Info Login Otomatis:</strong><br>
-                  Username: Tanpa Spasi (NIP)<br>
+                  Username: Tanpa Spasi (NIP / NIK / Nomor Identitas)<br>
                   Password Default: Tanggal Lahir (YYYYMMDD)
                 </p>
-              </div>
-
-              <div class="form-row">
-                <div class="form-group fluid">
-                  <label for="email">Email</label>
-                  <input type="email" id="email" v-model="formData.email" placeholder="Email pribadi (opsional)" />
-                </div>
               </div>
 
               <!-- Data Profile -->
               <div class="form-section-title">Identitas Pribadi</div>
               <div class="form-row">
                 <div class="form-group half">
-                  <label for="nip">NIP <span class="text-danger">*</span></label>
-                  <input type="text" id="nip" v-model="formData.nip" required placeholder="NIP Baru" />
+                  <label for="nip">NIP / NIK / Nomor Identitas <span class="text-danger">*</span></label>
+                  <input type="text" id="nip" v-model="formData.nip" required placeholder="NIP / NIK / Nomor Identitas" />
                 </div>
                 <div class="form-group half">
                   <label for="nama_lengkap">Nama Lengkap (Tanpa Gelar) <span class="text-danger">*</span></label>
@@ -521,14 +512,19 @@
               </div>
               
               <div class="form-row">
-                 <div class="form-group fluid">
+                 <div class="form-group half">
                   <label for="telepon">Nomor Telepon</label>
                   <input type="text" id="telepon" v-model="formData.telepon" placeholder="08..." />
+                </div>
+                <div class="form-group half">
+                  <label for="email">Email</label>
+                  <input type="email" id="email" v-model="formData.email" placeholder="Email pribadi (opsional)" />
                 </div>
               </div>
 
               <!-- Data Kepegawaian -->
-              <div class="form-section-title">Data Kepegawaian</div>
+              <!-- Data Kepegawaian -->
+              <div class="form-section-title">Status Kepegawaian</div>
               <div class="form-row">
                 <div class="form-group half">
                   <label for="employment_status_id">Status Pegawai <span class="text-danger">*</span></label>
@@ -565,6 +561,7 @@
                 </div>
               </div>
 
+              <div class="form-section-title">Penempatan & Golongan</div>
               <div class="form-row">
                 <div class="form-group half">
                    <label for="unit_kerja_id">Unit Kerja</label>
@@ -588,6 +585,7 @@
                 </div>
               </div>
 
+              <div class="form-section-title">Masa Kerja</div>
               <div class="form-row">
                 <div class="form-group half">
                   <label for="tmt_cpns">TMT CPNS</label>
@@ -670,11 +668,27 @@
             <h3>Hapus Pegawai?</h3>
             <p class="modal-desc">
               Anda akan menghapus pegawai <strong>{{ selectedEmployee?.profile?.nama_lengkap || 'Tidak Ada Nama' }}</strong>.
-              Tindakan ini tidak dapat dibatalkan.
+              Tindakan ini <strong>tidak dapat dibatalkan</strong>.
             </p>
+            
+            <div class="form-group" style="margin: 15px 0;">
+                <label class="d-block mb-2 text-muted small">Ketik <strong>{{ selectedEmployee?.profile?.nip || 'KONFIRMASI' }}</strong> untuk melanjutkan:</label>
+                <input 
+                    type="text" 
+                    v-model="deleteConfirmationInput" 
+                    class="form-control text-center" 
+                    placeholder="Ketik disini..." 
+                    style="width: 100%; padding: 8px; border: 1px solid #ddd; border-radius: 6px;"
+                />
+            </div>
+
             <div class="modal-actions-center">
               <button class="btn btn-secondary" @click="closeDeleteModal">Batal</button>
-              <button class="btn btn-danger" @click="deleteEmployee" :disabled="deleting">
+              <button 
+                class="btn btn-danger" 
+                @click="deleteEmployee" 
+                :disabled="deleting || deleteConfirmationInput !== (selectedEmployee?.profile?.nip || 'KONFIRMASI')"
+              >
                 {{ deleting ? 'Menghapus...' : 'Ya, Hapus' }}
               </button>
             </div>
@@ -1022,8 +1036,12 @@ const viewDetail = async (employee) => {
     }
 }
 
+// State for delete confirmation
+const deleteConfirmationInput = ref('')
+
 const confirmDelete = (employee) => {
     selectedEmployee.value = employee
+    deleteConfirmationInput.value = '' // Reset input
     showDeleteModal.value = true
 }
 
@@ -1036,11 +1054,16 @@ const closeDetailModal = () => {
 
 const closeFormModal = () => {
     showFormModal.value = false
-    selectedEmployee.value = null
+    // Only clear selectedEmployee if Detail modal is NOT open.
+    // If Detail modal is open, it relies on selectedEmployee to display data.
+    if (!showDetailModal.value) {
+        selectedEmployee.value = null
+    }
 }
 
 const closeDeleteModal = () => {
     showDeleteModal.value = false
+    deleteConfirmationInput.value = ''
     selectedEmployee.value = null
 }
 
@@ -1636,7 +1659,7 @@ onMounted(() => {
   background: rgba(17, 24, 39, 0.4);
   backdrop-filter: blur(4px);
   display: flex; align-items: center; justify-content: center;
-  z-index: 1000; padding: 16px;
+  z-index: 2000; padding: 16px;
 }
 .modal-card {
   background: white; border-radius: 16px;
