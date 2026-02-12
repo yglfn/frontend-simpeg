@@ -1,15 +1,18 @@
 <template>
-  <div class="admin-dashboard">
+  <div v-if="isPegawai">
+    <PegawaiDashboard />
+  </div>
+  <div v-else class="admin-dashboard">
     <!-- Page Header -->
     <div class="bg-white rounded-xl p-6 shadow-sm border border-slate-100 mb-6 flex flex-col md:flex-row justify-between items-center gap-4">
       <div class="text-center md:text-left">
         <h2 class="text-2xl font-bold text-slate-800 flex items-center justify-center md:justify-start gap-3">
           <i class="fas fa-user-shield text-blue-600"></i>
-          Dashboard Admin
+          Dashboard Super Admin
         </h2>
         <p class="text-slate-500 mt-2">
-          Selamat datang, <strong class="text-slate-700">{{ userName }}</strong>! 
-          Anda login sebagai <span class="bg-blue-100 text-blue-700 py-1 px-3 rounded-full text-xs font-semibold">Admin</span>
+          Selamat datang, 
+          Anda login sebagai <span class="bg-blue-100 text-blue-700 py-1 px-3 rounded-full text-xs font-semibold">Super Admin</span>
         </p>
         <p class="text-slate-400 text-sm mt-1">Panel kontrol utama sistem kepegawaian</p>
       </div>
@@ -330,9 +333,16 @@ import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
 import { ElMessage } from 'element-plus'
 import api from '@/services/api'
+import PegawaiDashboard from '@/views/dashboard/PegawaiDashboard.vue'
 
 const router = useRouter()
 const authStore = useAuthStore()
+
+// Role detection
+const isPegawai = computed(() => {
+  const roleId = authStore.user?.role_id
+  return roleId === 3
+})
 
 // State
 const isLoading = ref(false)

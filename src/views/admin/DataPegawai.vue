@@ -124,8 +124,8 @@
                 </td>
                 <td>
                   <div class="cell-primary">
-                    <span class="font-bold text-dark">{{ employee.profile?.nama_lengkap || employee.user?.username || 'Tidak Ada Nama' }}</span>
-                    <span class="small-note text-muted">{{ employee.user?.email || '-' }}</span>
+                    <span class="font-bold text-dark">{{ employee.profile?.nama_lengkap || employee.profile?.user?.username || 'Tidak Ada Nama' }}</span>
+                    <span class="email-text">{{ employee.profile?.user?.email || '-' }}</span>
                   </div>
                 </td>
                 <td>
@@ -158,6 +158,10 @@
                     </button>
                     <button class="btn-action edit" @click="openEditModal(employee)" title="Edit">
                       <i class="fas fa-pen"></i>
+                    </button>
+                    <!-- Tombol Reset Password -->
+                    <button class="btn-action password" @click="openPasswordModal(employee)" title="Reset & Ubah Password" style="background: #f3e8ff; color: #9333ea;">
+                      <i class="fas fa-key"></i>
                     </button>
                     <button class="btn-action delete" @click="confirmDelete(employee)" title="Hapus">
                       <i class="fas fa-trash-alt"></i>
@@ -217,21 +221,31 @@
               </div>
             </div>
 
-            <!-- ========== SECTION: Data Pribadi ========== -->
+            <!-- ========== SECTION: Identitas Pribadi ========== -->
             <div class="detail-section">
               <div class="detail-section-header">
                 <i class="fas fa-id-card"></i>
-                <span>Data Pribadi</span>
+                <span>Identitas Pribadi</span>
               </div>
               <div class="detail-grid">
-                <div class="info-box">
-                  <label>NIP / Identitas</label>
-                  <p>{{ selectedEmployee.profile?.nip || '-' }}</p>
+                <div class="info-box full-width">
+                  <label>NIP / NIK / Identitas</label>
+                  <p class="font-bold">{{ selectedEmployee.profile?.nip || '-' }}</p>
                 </div>
+                <!-- Nama + Gelar -->
                 <div class="info-box">
-                  <label>Email</label>
-                  <p>{{ selectedEmployee.profile?.user?.email || '-' }}</p>
+                  <label>Nama Lengkap</label>
+                  <p>{{ selectedEmployee.profile?.nama_lengkap || '-' }}</p>
                 </div>
+                 <div class="info-box">
+                  <label>Gelar (Depan / Belakang)</label>
+                  <p>
+                    {{ selectedEmployee.profile?.gelar_depan_1 || '' }} {{ selectedEmployee.profile?.gelar_depan_2 || '' }}
+                    /
+                    {{ selectedEmployee.profile?.gelar_belakang || '' }}
+                  </p>
+                </div>
+                <!-- TTL -->
                 <div class="info-box">
                   <label>Tempat, Tanggal Lahir</label>
                   <p>
@@ -239,11 +253,16 @@
                     {{ formatDate(selectedEmployee.profile?.tanggal_lahir) }}
                   </p>
                 </div>
+                <!-- JK & Gol Darah -->
                 <div class="info-box">
-                  <label>Jenis Kelamin</label>
-                  <p>{{ selectedEmployee.profile?.jenis_kelamin === 'L' ? 'Laki-laki' : (selectedEmployee.profile?.jenis_kelamin === 'P' ? 'Perempuan' : '-') }}</p>
+                  <label>Jenis Kelamin / Gol. Darah</label>
+                  <p>
+                    {{ selectedEmployee.profile?.jenis_kelamin === 'L' ? 'Laki-laki' : (selectedEmployee.profile?.jenis_kelamin === 'P' ? 'Perempuan' : '-') }}
+                    / {{ selectedEmployee.profile?.golongan_darah?.kode || '-' }}
+                  </p>
                 </div>
-                <div class="info-box">
+                <!-- Lainnya -->
+                 <div class="info-box">
                   <label>Agama</label>
                   <p>{{ selectedEmployee.profile?.agama?.nama_agama || '-' }}</p>
                 </div>
@@ -255,122 +274,213 @@
                   <label>Pendidikan Terakhir</label>
                   <p>{{ selectedEmployee.profile?.pendidikan?.nama_jenjang || '-' }}</p>
                 </div>
-                <div class="info-box">
-                  <label>Golongan Darah</label>
-                  <p>{{ selectedEmployee?.profile?.golongan_darah?.kode || '-' }}</p>
-                </div>
-                <div class="info-box">
-                  <label>Gelar Depan 1</label>
-                  <p>{{ selectedEmployee.profile?.gelar_depan_1 || '-' }}</p>
-                </div>
-                <div class="info-box">
-                  <label>Gelar Depan 2</label>
-                  <p>{{ selectedEmployee.profile?.gelar_depan_2 || '-' }}</p>
-                </div>
-                <div class="info-box">
-                  <label>Gelar Belakang</label>
-                  <p>{{ selectedEmployee.profile?.gelar_belakang || '-' }}</p>
-                </div>
+              </div>
+            </div>
+
+            <!-- ========== SECTION: Kontak ========== -->
+            <div class="detail-section">
+              <div class="detail-section-header">
+                <i class="fas fa-address-book"></i>
+                <span>Kontak</span>
+              </div>
+              <div class="detail-grid">
                 <div class="info-box">
                   <label>Telepon</label>
                   <p>{{ selectedEmployee.profile?.telepon || '-' }}</p>
                 </div>
                 <div class="info-box">
-                  <label>Kode Pos</label>
-                  <p>{{ selectedEmployee.profile?.kode_pos || '-' }}</p>
-                </div>
-                <div class="info-box">
-                  <label>Bank</label>
-                  <p>{{ selectedEmployee.profile?.bank?.nama_bank || '-' }}</p>
+                  <label>Email</label>
+                  <p>{{ selectedEmployee.profile?.user?.email || '-' }}</p>
                 </div>
               </div>
             </div>
 
-            <!-- ========== SECTION: Data Kepegawaian ========== -->
+             <!-- ========== SECTION: Status Kepegawaian ========== -->
             <div class="detail-section">
               <div class="detail-section-header">
-                <i class="fas fa-briefcase"></i>
-                <span>Data Kepegawaian</span>
+                 <i class="fas fa-briefcase"></i>
+                 <span>Status Kepegawaian</span>
               </div>
               <div class="detail-grid">
                 <div class="info-box">
-                  <label>Jenis Pegawai</label>
-                  <p>{{ selectedEmployee.jenis_pegawai?.nama_jenis || '-' }}</p>
-                </div>
-                <div class="info-box">
-                  <label>Status Kepegawaian</label>
+                  <label>Status Pegawai</label>
                   <p>{{ selectedEmployee.status_kepegawaian?.nama_status || '-' }}</p>
                 </div>
                 <div class="info-box">
-                  <label>Jabatan</label>
-                  <p>{{ selectedEmployee.jabatan?.nama_jabatan || '-' }}</p>
+                  <label>Jenis Pegawai</label>
+                  <p>{{ selectedEmployee.jenis_pegawai?.nama || '-' }}</p>
                 </div>
                 <div class="info-box">
                   <label>Unit Kerja</label>
                   <p>{{ selectedEmployee.unit_kerja?.nama_unit || '-' }}</p>
                 </div>
-                <div class="info-box">
-                  <label>Pangkat</label>
-                  <p>{{ selectedEmployee.pangkat?.nama_pangkat || '-' }}</p>
-                </div>
-                <div class="info-box">
-                  <label>Golongan</label>
-                  <p>{{ selectedEmployee.golongan?.nama_golongan || '-' }}</p>
-                </div>
-                <div class="info-box">
-                  <label>TMT CPNS</label>
-                  <p>{{ formatDate(selectedEmployee.profile?.tmt_cpns) }}</p>
-                </div>
-                <div class="info-box">
-                  <label>TMT PNS</label>
-                  <p>{{ formatDate(selectedEmployee.profile?.tmt_pns) }}</p>
-                </div>
               </div>
             </div>
 
-            <!-- ========== SECTION: Riwayat Jabatan Terakhir ========== -->
-            <div class="detail-section" v-if="getActiveRiwayat(selectedEmployee)">
+            <!-- ========== SECTION: Jabatan & Kepangkatan ========== -->
+            <div class="detail-section">
               <div class="detail-section-header">
-                <i class="fas fa-file-contract"></i>
-                <span>Riwayat Jabatan Terakhir</span>
+                <i class="fas fa-user-tag"></i>
+                <span>Jabatan & Kepangkatan</span>
               </div>
               <div class="detail-grid">
                 <div class="info-box">
-                  <label>Nomor SK</label>
-                  <p>{{ getActiveRiwayat(selectedEmployee).no_sk || '-' }}</p>
+                  <label>Jabatan</label>
+                  <p>{{ selectedEmployee.jabatan?.nama_jabatan || '-' }}</p>
+                </div>
+                 <div class="info-box">
+                  <label>Pangkat / Golongan</label>
+                  <p>{{ selectedEmployee.pangkat?.nama_pangkat || '-' }} ({{ selectedEmployee.golongan?.nama_golongan || '-' }})</p>
+                </div>
+                <!-- Details from Active Riwayat -->
+                 <div class="info-box">
+                  <label>Nomor SK Jabatan</label>
+                   <p>{{ getActiveRiwayat(selectedEmployee)?.no_sk || '-' }}</p>
+                </div>
+                 <div class="info-box">
+                  <label>Tanggal SK / TMT Jabatan</label>
+                   <p>
+                     {{ formatDate(getActiveRiwayat(selectedEmployee)?.tanggal_sk) }} /
+                     {{ formatDate(getActiveRiwayat(selectedEmployee)?.tmt_jabatan) }}
+                   </p>
+                  </div>
+               </div>
+            </div>
+
+            <!-- ========== SECTION: Tugas Tambahan ========== -->
+            <div class="detail-section" v-if="getActiveTugasTambahan(selectedEmployee)">
+              <div class="detail-section-header">
+                <i class="fas fa-tasks"></i>
+                <span>Tugas Tambahan</span>
+              </div>
+              <div class="detail-grid">
+                <div class="info-box full-width">
+                  <label>Nama Tugas</label>
+                  <p>{{ getActiveTugasTambahan(selectedEmployee)?.tugas_tambahan?.nama_tugas || '-' }}</p>
                 </div>
                 <div class="info-box">
-                  <label>Tanggal SK</label>
-                  <p>{{ formatDate(getActiveRiwayat(selectedEmployee).tanggal_sk) }}</p>
+                  <label>TMT Tugas</label>
+                  <p>{{ formatDate(getActiveTugasTambahan(selectedEmployee)?.tmt_mulai) }}</p>
                 </div>
                 <div class="info-box">
-                  <label>TMT Jabatan</label>
-                  <p>{{ formatDate(getActiveRiwayat(selectedEmployee).tmt_jabatan) }}</p>
+                  <label>Unit Kerja Tugas</label>
+                  <p>{{ getActiveTugasTambahan(selectedEmployee)?.tugas_tambahan?.unit_kerja?.nama_unit || '-' }}</p>
                 </div>
-                <div class="info-box">
-                  <label>Bidang Studi</label>
-                  <p>{{ getActiveRiwayat(selectedEmployee).bidang_studi || '-' }}</p>
-                </div>
-                <div class="info-box">
-                  <label>Keterangan Jabatan</label>
-                  <p>{{ getActiveRiwayat(selectedEmployee).keterangan_jabatan || '-' }}</p>
-                </div>
-                <div class="info-box">
-                  <label>Diperbantukan</label>
-                  <p>{{ getActiveRiwayat(selectedEmployee).is_diperbantukan ? 'Ya' : 'Tidak' }}</p>
-                </div>
-                <div class="info-box">
-                  <label>Tunjangan Jabatan</label>
-                  <p>{{ getActiveRiwayat(selectedEmployee).tunjangan_jabatan ? 'Rp ' + Number(getActiveRiwayat(selectedEmployee).tunjangan_jabatan).toLocaleString('id-ID') : '-' }}</p>
+                 <div class="info-box full-width" v-if="getActiveTugasTambahan(selectedEmployee)?.keterangan">
+                  <label>Keterangan</label>
+                  <p>{{ getActiveTugasTambahan(selectedEmployee)?.keterangan || '-' }}</p>
                 </div>
               </div>
             </div>
 
-            <!-- ========== SECTION: Informasi Lainnya ========== -->
+            <!-- ========== SECTION: Masa Kerja ========== -->
+            <div class="detail-section">
+              <div class="detail-section-header">
+                <i class="fas fa-hourglass-half"></i>
+                <span>Masa Kerja</span>
+              </div>
+              <div class="detail-grid">
+                <div class="info-box">
+                   <label>TMT CPNS</label>
+                   <p>{{ formatDate(selectedEmployee.profile?.tmt_cpns) }}</p>
+                </div>
+                <div class="info-box">
+                   <label>TMT PNS</label>
+                   <p>{{ formatDate(selectedEmployee.profile?.tmt_pns) }}</p>
+                </div>
+              </div>
+            </div>
+
+            <!-- ========== SECTION: Detail Akademik ========== -->
+            <div class="detail-section">
+              <div class="detail-section-header">
+                <i class="fas fa-graduation-cap"></i>
+                <span>Detail Akademik & Lainnya</span>
+              </div>
+              <div class="detail-grid">
+                 <div class="info-box">
+                   <label>Bidang Studi</label>
+                   <p>{{ getActiveRiwayat(selectedEmployee)?.bidang_studi || '-' }}</p>
+                 </div>
+                 <div class="info-box">
+                   <label>Keterangan Jabatan</label>
+                   <p>{{ getActiveRiwayat(selectedEmployee)?.keterangan_jabatan || '-' }}</p>
+                 </div>
+                 <div class="info-box">
+                   <label>Diperbantukan</label>
+                   <p>{{ getActiveRiwayat(selectedEmployee)?.is_diperbantukan ? 'Ya' : 'Tidak' }}</p>
+                 </div>
+                 <div class="info-box" v-if="getActiveRiwayat(selectedEmployee)?.is_diperbantukan">
+                   <label>Keterangan Diperbantukan</label>
+                   <p>{{ getActiveRiwayat(selectedEmployee)?.keterangan_diperbantukan || '-' }}</p>
+                 </div>
+              </div>
+            </div>
+
+             <!-- ========== SECTION: Tunjangan ========== -->
+            <div class="detail-section">
+              <div class="detail-section-header">
+                <i class="fas fa-money-bill-wave"></i>
+                <span>Tunjangan</span>
+              </div>
+              <div class="detail-grid">
+                 <div class="info-box">
+                   <label>Tunjangan Jabatan</label>
+                   <p>{{ getActiveRiwayat(selectedEmployee)?.tunjangan_jabatan ? 'Rp ' + Number(getActiveRiwayat(selectedEmployee)?.tunjangan_jabatan).toLocaleString('id-ID') : '-' }}</p>
+                 </div>
+              </div>
+            </div>
+
+             <!-- ========== SECTION: Riwayat Jabatan Table ========== -->
+            <div class="detail-section">
+              <div class="detail-section-header">
+                <i class="fas fa-file-contract"></i>
+                <span>Riwayat Jabatan</span>
+              </div>
+               <div style="padding: 20px;">
+                <div class="table-wrapper" v-if="selectedEmployee.profile?.riwayat_jabatan?.length > 0">
+                  <table class="modern-table">
+                    <thead>
+                      <tr>
+                        <th>Jabatan</th>
+                        <th>Unit Kerja</th>
+                        <th>No SK / Tgl SK</th>
+                        <th>TMT</th>
+                        <th>Status</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr v-for="riwayat in selectedEmployee.profile.riwayat_jabatan" :key="riwayat.id">
+                        <td>
+                          <div class="font-bold">{{ riwayat.jabatan?.nama_jabatan || '-' }}</div>
+                          <div class="text-muted small-note">{{ riwayat.bidang_studi || '' }}</div>
+                        </td>
+                        <td>{{ riwayat.unit_kerja?.nama_unit || '-' }}</td>
+                        <td>
+                          <div>{{ riwayat.no_sk || '-' }}</div>
+                          <div class="text-muted small-note">{{ formatDate(riwayat.tanggal_sk) }}</div>
+                        </td>
+                        <td>{{ formatDate(riwayat.tmt_jabatan) }}</td>
+                        <td>
+                          <span class="badge" :class="riwayat.is_aktif ? 'badge-green' : 'badge-gray'">
+                            {{ riwayat.is_aktif ? 'Aktif' : 'Tidak Aktif' }}
+                          </span>
+                        </td>
+                      </tr>
+                    </tbody>
+                  </table>
+                </div>
+                <div v-else class="text-center py-4 text-muted">
+                  Belum ada riwayat jabatan.
+                </div>
+              </div>
+            </div>
+
+            <!-- ========== SECTION: Informasi Data ========== -->
             <div class="detail-section">
               <div class="detail-section-header">
                 <i class="fas fa-info-circle"></i>
-                <span>Informasi Lainnya</span>
+                <span>Informasi Data</span>
               </div>
               <div class="detail-grid">
                 <div class="info-box">
@@ -413,33 +523,40 @@
               </div>
 
               <!-- Data Profile -->
+              <!-- ========== SECTION: Identitas Pribadi ========== -->
               <div class="form-section-title">Identitas Pribadi</div>
+              
+              <!-- [NIP] -->
               <div class="form-row">
-                <div class="form-group half">
+                <div class="form-group fluid">
                   <label for="nip">NIP / NIK / Nomor Identitas <span class="text-danger">*</span></label>
                   <input type="text" id="nip" v-model="formData.nip" required placeholder="NIP / NIK / Nomor Identitas" />
                 </div>
-                <div class="form-group half">
-                  <label for="nama_lengkap">Nama Lengkap (Tanpa Gelar) <span class="text-danger">*</span></label>
-                  <input type="text" id="nama_lengkap" v-model="formData.nama_lengkap" required placeholder="Nama Sesuai KTP" />
-                </div>
               </div>
 
+              <!-- [Nama + Gelar] -->
               <div class="form-row three-cols">
                 <div class="form-group">
                   <label for="gelar_depan_1">Gelar Depan 1</label>
                   <input type="text" id="gelar_depan_1" v-model="formData.gelar_depan_1" placeholder="Contoh: Dr." />
                 </div>
-                <div class="form-group">
+                 <div class="form-group">
                   <label for="gelar_depan_2">Gelar Depan 2</label>
                   <input type="text" id="gelar_depan_2" v-model="formData.gelar_depan_2" placeholder="Contoh: H." />
                 </div>
                 <div class="form-group">
                   <label for="gelar_belakang">Gelar Belakang</label>
-                  <input type="text" id="gelar_belakang" v-model="formData.gelar_belakang" placeholder="Contoh: S.Kom, M.T" />
+                  <input type="text" id="gelar_belakang" v-model="formData.gelar_belakang" placeholder="Contoh: S.Kom" />
+                </div>
+              </div>
+              <div class="form-row">
+                 <div class="form-group fluid">
+                  <label for="nama_lengkap">Nama Lengkap (Tanpa Gelar) <span class="text-danger">*</span></label>
+                  <input type="text" id="nama_lengkap" v-model="formData.nama_lengkap" required placeholder="Nama Sesuai KTP" />
                 </div>
               </div>
 
+              <!-- [TTL] -->
               <div class="form-row">
                 <div class="form-group half">
                   <label for="tempat_lahir">Tempat Lahir</label>
@@ -447,10 +564,18 @@
                 </div>
                 <div class="form-group half">
                   <label for="tanggal_lahir">Tanggal Lahir <span class="text-danger">*</span></label>
-                  <input type="date" id="tanggal_lahir" v-model="formData.tanggal_lahir" required />
+                  <el-date-picker
+                    v-model="formData.tanggal_lahir"
+                    type="date"
+                    placeholder="Pilih Tanggal Lahir"
+                    format="DD/MM/YYYY"
+                    value-format="YYYY-MM-DD"
+                    style="width: 100%"
+                  />
                 </div>
               </div>
 
+              <!-- [JK | Gol Darah] -->
               <div class="form-row">
                 <div class="form-group half">
                   <label for="jenis_kelamin">Jenis Kelamin <span class="text-danger">*</span></label>
@@ -475,8 +600,9 @@
                 </div>
               </div>
 
-              <div class="form-row">
-                <div class="form-group half">
+              <!-- [Agama | Status Nikah | Pendidikan] -->
+              <div class="form-row three-cols">
+                <div class="form-group">
                   <label for="agama_id">Agama</label>
                   <div class="select-wrapper fluid">
                     <select id="agama_id" v-model="formData.agama_id">
@@ -486,7 +612,7 @@
                     <i class="fas fa-chevron-down dropdown-icon"></i>
                   </div>
                 </div>
-                 <div class="form-group half">
+                <div class="form-group">
                   <label for="status_kawin_id">Status Pernikahan</label>
                   <div class="select-wrapper fluid">
                     <select id="status_kawin_id" v-model="formData.status_kawin_id">
@@ -496,10 +622,7 @@
                     <i class="fas fa-chevron-down dropdown-icon"></i>
                   </div>
                 </div>
-              </div>
-
-              <div class="form-row">
-                 <div class="form-group fluid">
+                <div class="form-group">
                   <label for="pendidikan_id">Pendidikan Terakhir</label>
                   <div class="select-wrapper fluid">
                     <select id="pendidikan_id" v-model="formData.pendidikan_id">
@@ -510,7 +633,9 @@
                   </div>
                 </div>
               </div>
-              
+
+              <!-- ========== SECTION: Kontak ========== -->
+              <div class="form-section-title">Kontak</div>
               <div class="form-row">
                  <div class="form-group half">
                   <label for="telepon">Nomor Telepon</label>
@@ -522,11 +647,10 @@
                 </div>
               </div>
 
-              <!-- Data Kepegawaian -->
-              <!-- Data Kepegawaian -->
+               <!-- ========== SECTION: Status Kepegawaian ========== -->
               <div class="form-section-title">Status Kepegawaian</div>
-              <div class="form-row">
-                <div class="form-group half">
+              <div class="form-row three-cols">
+                <div class="form-group">
                   <label for="employment_status_id">Status Pegawai <span class="text-danger">*</span></label>
                   <div class="select-wrapper fluid">
                     <select id="employment_status_id" v-model="formData.status_kepegawaian_id" required>
@@ -536,7 +660,7 @@
                     <i class="fas fa-chevron-down dropdown-icon"></i>
                   </div>
                 </div>
-                <div class="form-group half">
+                <div class="form-group">
                    <label for="jenis_pegawai_id">Jenis Pegawai</label>
                    <div class="select-wrapper fluid">
                     <select id="jenis_pegawai_id" v-model="formData.jenis_pegawai_id">
@@ -546,8 +670,20 @@
                     <i class="fas fa-chevron-down dropdown-icon"></i>
                    </div>
                 </div>
+                <div class="form-group">
+                   <label for="unit_kerja_id">Unit Kerja</label>
+                   <div class="select-wrapper fluid">
+                    <select id="unit_kerja_id" v-model="formData.unit_kerja_id">
+                      <option value="">Pilih...</option>
+                      <option v-for="unit in work_units" :key="unit.id" :value="unit.id">{{ unit.nama_unit }}</option>
+                    </select>
+                    <i class="fas fa-chevron-down dropdown-icon"></i>
+                   </div>
+                </div>
               </div>
 
+              <!-- ========== SECTION: Jabatan & Kepangkatan ========== -->
+              <div class="form-section-title">Jabatan & Kepangkatan</div>
               <div class="form-row">
                 <div class="form-group half">
                    <label for="jabatan_id">Jabatan <span class="text-danger">*</span></label>
@@ -555,20 +691,6 @@
                     <select id="jabatan_id" v-model="formData.jabatan_id" @change="onJabatanChange" required>
                       <option value="">Pilih...</option>
                       <option v-for="pos in positions" :key="pos.id" :value="pos.id">{{ pos.nama_jabatan }}</option>
-                    </select>
-                    <i class="fas fa-chevron-down dropdown-icon"></i>
-                   </div>
-                </div>
-              </div>
-
-              <div class="form-section-title">Penempatan & Golongan</div>
-              <div class="form-row">
-                <div class="form-group half">
-                   <label for="unit_kerja_id">Unit Kerja</label>
-                   <div class="select-wrapper fluid">
-                    <select id="unit_kerja_id" v-model="formData.unit_kerja_id">
-                      <option value="">Pilih...</option>
-                      <option v-for="unit in work_units" :key="unit.id" :value="unit.id">{{ unit.nama_unit }}</option>
                     </select>
                     <i class="fas fa-chevron-down dropdown-icon"></i>
                    </div>
@@ -585,48 +707,103 @@
                 </div>
               </div>
 
-              <div class="form-section-title">Masa Kerja</div>
-              <div class="form-row">
-                <div class="form-group half">
-                  <label for="tmt_cpns">TMT CPNS</label>
-                  <input type="date" id="tmt_cpns" v-model="formData.tmt_cpns" />
-                </div>
-                <div class="form-group half">
-                  <label for="tmt_pns">TMT PNS</label>
-                  <input type="date" id="tmt_pns" v-model="formData.tmt_pns" />
-                </div>
-              </div>
-
               <div class="form-row three-cols">
                 <div class="form-group">
                    <label for="no_sk_jabatan">Nomor SK Jabatan</label>
                    <input type="text" id="no_sk_jabatan" v-model="formData.no_sk_jabatan" placeholder="Nomor SK" />
                 </div>
                 <div class="form-group">
-                   <label for="tanggal_sk_jabatan">Tanggal SK</label>
-                   <input type="date" id="tanggal_sk_jabatan" v-model="formData.tanggal_sk_jabatan" />
+                   <label for="tanggal_sk_jabatan">Tanggal SK Jabatan</label>
+                   <el-date-picker
+                    v-model="formData.tanggal_sk_jabatan"
+                    type="date"
+                    placeholder="Pilih Tanggal"
+                    format="DD/MM/YYYY"
+                    value-format="YYYY-MM-DD"
+                    style="width: 100%"
+                  />
                 </div>
                 <div class="form-group">
                    <label for="tmt_jabatan">TMT Jabatan</label>
-                   <input type="date" id="tmt_jabatan" v-model="formData.tmt_jabatan" />
+                   <el-date-picker
+                    v-model="formData.tmt_jabatan"
+                    type="date"
+                    placeholder="Pilih Tanggal"
+                    format="DD/MM/YYYY"
+                    value-format="YYYY-MM-DD"
+                    style="width: 100%"
+                  />
                 </div>
               </div>
 
+              <!-- Tugas Tambahan -->
+               <div class="form-row three-cols">
+                <div class="form-group">
+                  <label>Tugas Tambahan</label>
+                  <div class="select-wrapper">
+                    <select v-model="formData.tugas_tambahan_id" class="form-select">
+                      <option value="">Pilih Tugas Tambahan</option>
+                      <option v-for="tugas in additionalDuties" :key="tugas.id" :value="tugas.id">
+                        {{ tugas.nama_tugas }}
+                      </option>
+                    </select>
+                    <i class="fas fa-chevron-down dropdown-icon"></i>
+                  </div>
+                </div>
+                 <div class="form-group">
+                  <label>TMT Tugas Tambahan</label>
+                   <el-date-picker
+                    v-model="formData.tmt_tugas_tambahan"
+                    type="date"
+                    placeholder="Pilih Tanggal"
+                    format="DD/MM/YYYY"
+                    value-format="YYYY-MM-DD"
+                    style="width: 100%"
+                  />
+                </div>
+                 <div class="form-group">
+                  <label>Keterangan Tugas</label>
+                  <input type="text" v-model="formData.keterangan_tugas" class="form-input" placeholder="Keterangan (Opsional)">
+                </div>
+              </div>
+
+              <!-- ========== SECTION: Masa Kerja ========== -->
+              <div class="form-section-title">Masa Kerja</div>
               <div class="form-row">
                 <div class="form-group half">
+                  <label for="tmt_cpns">TMT CPNS</label>
+                  <el-date-picker
+                    v-model="formData.tmt_cpns"
+                    type="date"
+                    placeholder="Pilih Tanggal"
+                    format="DD/MM/YYYY"
+                    value-format="YYYY-MM-DD"
+                    style="width: 100%"
+                  />
+                </div>
+                <div class="form-group half">
+                  <label for="tmt_pns">TMT PNS</label>
+                  <el-date-picker
+                    v-model="formData.tmt_pns"
+                    type="date"
+                    placeholder="Pilih Tanggal"
+                    format="DD/MM/YYYY"
+                    value-format="YYYY-MM-DD"
+                    style="width: 100%"
+                  />
+                </div>
+              </div>
+
+              <!-- ========== SECTION: Detail Akademik ========== -->
+              <div class="form-section-title">Detail Akademik</div>
+              <div class="form-row three-cols">
+                <div class="form-group">
                    <label for="bidang_studi">Bidang Studi</label>
                    <input type="text" id="bidang_studi" v-model="formData.bidang_studi" placeholder="Contoh: Pendidikan Agama Islam" />
                 </div>
-                <div class="form-group half">
+                <div class="form-group">
                    <label for="keterangan_jabatan">Keterangan Jabatan</label>
                    <input type="text" id="keterangan_jabatan" v-model="formData.keterangan_jabatan" placeholder="Contoh: Dosen Tetap" />
-                </div>
-              </div>
-
-              <div class="form-row three-cols">
-                <div class="form-group">
-                  <label for="tunjangan_jabatan">Tunjangan Jabatan (Rp)</label>
-                  <input type="number" id="tunjangan_jabatan" v-model="formData.tunjangan_jabatan" placeholder="0" />
                 </div>
                 <div class="form-group">
                   <label for="is_diperbantukan">Diperbantukan</label>
@@ -637,10 +814,22 @@
                     </select>
                     <i class="fas fa-chevron-down dropdown-icon"></i>
                   </div>
+                  <!-- Sub-field if needed, or simplified -->
                 </div>
-                <div class="form-group" v-if="formData.is_diperbantukan">
-                  <label for="keterangan_diperbantukan">Keterangan</label>
-                  <input type="text" id="keterangan_diperbantukan" v-model="formData.keterangan_diperbantukan" placeholder="Keterangan..." />
+              </div>
+              <div class="form-row" v-if="formData.is_diperbantukan">
+                 <div class="form-group fluid">
+                   <label for="keterangan_diperbantukan">Keterangan Diperbantukan</label>
+                   <input type="text" id="keterangan_diperbantukan" v-model="formData.keterangan_diperbantukan" placeholder="Keterangan..." />
+                 </div>
+              </div>
+
+              <!-- ========== SECTION: Tunjangan ========== -->
+              <div class="form-section-title">Tunjangan</div>
+              <div class="form-row">
+                <div class="form-group fluid">
+                  <label for="tunjangan_jabatan">Tunjangan Jabatan (Rp)</label>
+                  <input type="number" id="tunjangan_jabatan" v-model="formData.tunjangan_jabatan" placeholder="0" />
                 </div>
               </div>
 
@@ -697,6 +886,62 @@
       </div>
     </Transition>
   </div>
+
+    <!-- Password Management Modal -->
+    <Transition name="modal-fade">
+      <div v-if="showPasswordModal" class="modal-backdrop" @click="closePasswordModal">
+        <div class="modal-card modal-sm" @click.stop>
+          <div class="modal-header">
+            <h2>Manajemen Password</h2>
+            <button class="btn-close" @click="closePasswordModal"><i class="fas fa-times"></i></button>
+          </div>
+          <div class="modal-body">
+            <div class="state-container" style="padding: 20px 0;">
+                <div class="state-icon bg-blue" style="width: 50px; height: 50px; font-size: 20px;">
+                    <i class="fas fa-key"></i>
+                </div>
+                <h3 style="font-size: 16px; margin-bottom: 5px;">{{ selectedEmployee?.profile?.nama_lengkap }}</h3>
+                <p style="font-size: 12px; margin-bottom: 20px;">Username: {{ selectedEmployee?.profile?.user?.username || '-' }}</p>
+            </div>
+
+            <div class="password-actions">
+                <!-- Option 1: Reset to Default -->
+                <div class="option-card" style="margin-bottom: 20px; padding: 15px; background: #f9fafb; border-radius: 8px; border: 1px solid #e5e7eb;">
+                    <h4 style="margin: 0 0 10px; font-size: 14px; color: #374151;">Opsi 1: Reset ke Default</h4>
+                    <p style="font-size: 12px; color: #6b7280; margin-bottom: 12px;">
+                        Password akan direset menjadi tanggal lahir (YYYYMMDD).<br>
+                        Contoh: <strong>{{ getDefaultPasswordExample(selectedEmployee) }}</strong>
+                    </p>
+                    <button class="btn btn-secondary fluid" @click="resetPasswordToDefault" :disabled="submittingPassword">
+                        <i class="fas fa-sync-alt"></i> Reset Password Default
+                    </button>
+                </div>
+
+                 <!-- Option 2: Set Custom -->
+                 <div class="option-card" style="padding: 15px; background: #fff; border-radius: 8px; border: 1px solid #e5e7eb;">
+                    <h4 style="margin: 0 0 10px; font-size: 14px; color: #374151;">Opsi 2: Ubah Password Manual</h4>
+                    <div class="form-group" style="margin-bottom: 10px;">
+                        <input type="password" v-model="customPassword" placeholder="Masukkan password baru..." class="fluid" style="width: 100%; box-sizing: border-box; margin-bottom: 8px;" />
+                        <input type="password" v-model="customPasswordConfirm" placeholder="Konfirmasi password baru..." class="fluid" style="width: 100%; box-sizing: border-box;" />
+                    </div>
+                    <button class="btn btn-primary fluid" @click="changeCustomPassword" :disabled="!isCustomPasswordValid || submittingPassword">
+                        <i class="fas fa-save"></i> Simpan Password Baru
+                    </button>
+                    <div style="margin-top: 5px;">
+                        <p v-if="customPassword && customPassword.length < 6" style="font-size: 11px; color: #ef4444; margin: 0;">
+                            Minimal 6 karakter.
+                        </p>
+                        <p v-if="customPassword && customPasswordConfirm && customPassword !== customPasswordConfirm" style="font-size: 11px; color: #ef4444; margin: 0;">
+                            Password tidak cocok.
+                        </p>
+                    </div>
+                </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </Transition>
+
 </template>
 
 <script setup>
@@ -714,10 +959,14 @@ const filterWorkUnit = ref('')
 const showDetailModal = ref(false)
 const showFormModal = ref(false)
 const showDeleteModal = ref(false)
+const showPasswordModal = ref(false) // New
 const isEditMode = ref(false)
 const submitting = ref(false)
+const submittingPassword = ref(false) // New
 const deleting = ref(false)
 const referencesLoaded = ref(false)
+const customPassword = ref('') // New
+const customPasswordConfirm = ref('') // New
 
 // Data
 const employeeList = ref([])
@@ -731,6 +980,7 @@ const educations = ref([])
 const maritalStatuses = ref([])
 const bloodTypes = ref([])
 const employeeTypes = ref([])
+const additionalDuties = ref([]) // Tugas Tambahan
 
 
 // Pagination
@@ -777,6 +1027,11 @@ const formData = ref({
   tmt_jabatan: '',
   no_sk_jabatan: '', // Added for no_sk
   tanggal_sk_jabatan: '', // Added for tanggal_sk
+  
+   // Tugas Tambahan defaults
+    tugas_tambahan_id: '',
+    tmt_tugas_tambahan: '',
+    keterangan_tugas: '',
 })
 
 // Computed Properties
@@ -860,7 +1115,33 @@ const updateEmployee = async () => {
     await api.put(`/super-admin/profile-pegawai/${selectedEmployee.value.profile_id}`, payload)
     ElMessage.success('Pegawai berhasil diperbarui')
     closeFormModal()
-    fetchEmployees()
+    await fetchEmployees()
+
+    // Real-time update for Detail Modal if open
+    if (showDetailModal.value && selectedEmployee.value) {
+        try {
+            const response = await api.get(`/super-admin/profile-pegawai/${selectedEmployee.value.profile_id}`)
+            if (response.data?.data) {
+                const profile = response.data.data
+                // Use updated_at from Pegawai if available (since that's what we touched), else Profile
+                const newUpdatedAt = profile.pegawai?.updated_at || profile.updated_at
+                
+                selectedEmployee.value = {
+                    ...selectedEmployee.value,
+                    profile: profile,
+                    updated_at: newUpdatedAt, 
+                    jenis_pegawai: profile.pegawai?.jenis_pegawai,
+                    status_kepegawaian: profile.pegawai?.status_kepegawaian,
+                    golongan: profile.pegawai?.golongan,
+                    pangkat: profile.pegawai?.pangkat,
+                    jabatan: profile.pegawai?.jabatan,
+                    unit_kerja: profile.pegawai?.unit_kerja,
+                }
+            }
+        } catch (err) {
+            console.error('Failed to refresh detail', err)
+        }
+    }
   } catch (error) {
      console.error('Update Error', error)
     if (error.response?.status === 422 && error.response?.data?.errors) {
@@ -939,6 +1220,9 @@ const openEditModal = async (employee) => {
             // Map Riwayat Jabatan
             ...((() => {
               const aktif = fullRiwayat?.find(r => r.is_aktif) || fullRiwayat?.[fullRiwayat.length - 1]
+              // Check for active additional duty in the active position history
+              const activeDuty = aktif?.riwayat_tugas_tambahan?.find(t => !t.tmt_selesai)
+
               return {
                 no_sk_jabatan: aktif?.no_sk || '',
                 tanggal_sk_jabatan: formatDateForInput(aktif?.tanggal_sk),
@@ -948,6 +1232,11 @@ const openEditModal = async (employee) => {
                 is_diperbantukan: aktif?.is_diperbantukan || false,
                 keterangan_diperbantukan: aktif?.keterangan_diperbantukan || '',
                 tunjangan_jabatan: aktif?.tunjangan_jabatan || '',
+                
+                // Tugas Tambahan Map
+                tugas_tambahan_id: activeDuty?.tugas_tambahan_id || '',
+                tmt_tugas_tambahan: formatDateForInput(activeDuty?.tmt_mulai),
+                keterangan_tugas: activeDuty?.keterangan || '',
               }
             })()),
         }
@@ -994,6 +1283,97 @@ const resetForm = () => {
       is_diperbantukan: false,
       keterangan_diperbantukan: '',
       tunjangan_jabatan: '',
+      tugas_tambahan_id: '',
+      tmt_tugas_tambahan: '',
+      keterangan_tugas: '',
+    }
+}
+
+
+
+// Password Management Logic
+// Password Management Logic
+const openPasswordModal = async (employee) => {
+    if (!employee.profile?.user?.id) {
+        ElMessage.warning('Pegawai ini belum memiliki akun user.')
+        return
+    }
+    
+    // Fetch full profile data to ensure we have tanggal_lahir
+    try {
+        const response = await api.get(`/super-admin/profile-pegawai/${employee.profile_id}`)
+        if (response.data?.data) {
+             selectedEmployee.value = { ...employee, profile: response.data.data }
+        } else {
+             selectedEmployee.value = employee
+        }
+    } catch (error) {
+        console.error('Error fetching profile for password reset:', error)
+        selectedEmployee.value = employee
+    }
+
+    customPassword.value = ''
+    customPasswordConfirm.value = ''
+    showPasswordModal.value = true
+}
+
+const closePasswordModal = () => {
+    showPasswordModal.value = false
+    customPassword.value = ''
+    customPasswordConfirm.value = ''
+    selectedEmployee.value = null
+}
+
+const getDefaultPasswordExample = (employee) => {
+    if (!employee?.profile?.tanggal_lahir) return 'YYYYMMDD'
+    return employee.profile.tanggal_lahir.replace(/-/g, '')
+}
+
+const isCustomPasswordValid = computed(() => {
+    return customPassword.value && 
+           customPassword.value.length >= 6 && 
+           customPassword.value === customPasswordConfirm.value
+})
+
+const resetPasswordToDefault = async () => {
+    if (!selectedEmployee.value?.profile?.tanggal_lahir) {
+        ElMessage.error('Tanggal lahir tidak tersedia, tidak bisa reset default.')
+        return
+    }
+    
+    // Format YYYYMMDD
+    const defaultPass = selectedEmployee.value.profile.tanggal_lahir.replace(/-/g, '')
+    
+    try {
+        submittingPassword.value = true
+        await api.post(`/super-admin/users/${selectedEmployee.value.profile.user.id}/reset-password`, {
+            new_password: defaultPass
+        })
+        ElMessage.success(`Password berhasil direset menjadi: ${defaultPass}`)
+        closePasswordModal()
+    } catch (error) {
+        console.error('Reset Password Error', error)
+        ElMessage.error('Gagal mereset password.')
+    } finally {
+        submittingPassword.value = false
+    }
+}
+
+const changeCustomPassword = async () => {
+    if (!isCustomPasswordValid.value) return
+    
+    try {
+        submittingPassword.value = true
+        await api.post(`/super-admin/users/${selectedEmployee.value.profile.user.id}/reset-password`, {
+            new_password: customPassword.value
+        })
+        ElMessage.success('Password berhasil diubah.')
+        closePasswordModal()
+    } catch (error) {
+        console.error('Change Password Error', error)
+        ElMessage.error('Gagal mengubah password.')
+    } finally {
+        submittingPassword.value = false
     }
 }
 
@@ -1080,7 +1460,8 @@ const fetchReferences = async () => {
       educationsRes,
       maritalRes,
       bloodRes,
-      typeRes
+      typeRes,
+      dutiesRes // Added
     ] = await Promise.all([
       api.get('/super-admin/jabatan'),
       api.get('/super-admin/unit-kerja'),
@@ -1091,6 +1472,7 @@ const fetchReferences = async () => {
       api.get('/super-admin/reference/status-kawin'),
       api.get('/super-admin/reference/golongan-darah'),
       api.get('/super-admin/reference/jenis-pegawai'),
+      api.get('/super-admin/reference/tugas-tambahan'), // Added
     ])
     
     positions.value = positionsRes.data.data
@@ -1102,6 +1484,7 @@ const fetchReferences = async () => {
     maritalStatuses.value = maritalRes.data.data
     bloodTypes.value = bloodRes.data.data
     employeeTypes.value = typeRes.data.data
+    additionalDuties.value = dutiesRes.data.data // Added
     referencesLoaded.value = true
     
   } catch(error) {
@@ -1271,6 +1654,17 @@ const getActiveRiwayat = (employee) => {
   const riwayat = employee.profile.riwayat_jabatan
   if (riwayat.length === 0) return null
   return riwayat.find(r => r.is_aktif) || riwayat[riwayat.length - 1]
+}
+
+const getActiveTugasTambahan = (employee) => {
+  const activeRiwayat = getActiveRiwayat(employee)
+  if (!activeRiwayat || !activeRiwayat.riwayat_tugas_tambahan) return null
+  // Find active duty (tmt_selesai is null) or take the latest one
+  const duties = activeRiwayat.riwayat_tugas_tambahan
+  if (Array.isArray(duties)) {
+      return duties.find(t => !t.tmt_selesai) || duties[duties.length - 1]
+  }
+  return null
 }
 
 const formatDateTime = (dateString) => {
@@ -1572,6 +1966,12 @@ onMounted(() => {
 .text-right { text-align: right; }
 .cell-primary { display: flex; flex-direction: column; }
 .small-note { font-size: 11px; margin-top: 2px; }
+.email-text {
+  font-size: 13px;
+  color: #4b5563;
+  margin-top: 4px;
+  font-weight: 500;
+}
 
 /* Specific Column Styles */
 .code-badge {
@@ -1782,6 +2182,11 @@ onMounted(() => {
 .half { flex: 1; }
 .fluid { width: 100%; }
 .form-actions-right { display: flex; justify-content: flex-end; gap: 12px; margin-top: 10px; }
+.form-row.three-cols {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 16px;
+}
 
 /* Delete Modal Specifics */
 .warning-icon {

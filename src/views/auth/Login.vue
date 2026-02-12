@@ -77,7 +77,7 @@
         </div>
 
         <div class="form-group">
-          <label for="username" class="form-label">Email / NIP</label>
+          <label for="username" class="form-label">Email / NIP / NIK / Nomor Identitas</label>
           <div class="input-with-icon">
             <i class="fas fa-user"></i>
             <input
@@ -85,7 +85,7 @@
               id="username"
               class="form-input"
               v-model="form.username"
-              placeholder="Masukkan email atau NIP"
+              placeholder="Masukkan identitas anda"
               required
             />
           </div>
@@ -93,7 +93,7 @@
         </div>
 
         <div class="form-group">
-          <label for="password" class="form-label">Password / Tanggal Lahir</label>
+          <label for="password" class="form-label">Password</label>
           <div class="input-with-icon">
             <i class="fas fa-lock"></i>
             <input
@@ -101,7 +101,7 @@
               id="password"
               class="form-input"
               v-model="form.password"
-              placeholder="Masukkan password atau tanggal lahir (YYYY-MM-DD)"
+              placeholder="Masukkan password anda"
               required
             />
             <button type="button" class="password-toggle" @click="togglePasswordVisibility">
@@ -227,14 +227,8 @@ const handleLogin = async () => {
     if (result && result.success !== false) {
       ElMessage.success('Login berhasil! Selamat datang.')
       
-      // Handle redirect berdasarkan status user
-      if (result.needsProfile || result.status === 'NEW_USER') {
-        // User baru perlu melengkapi profil
-        router.push('/complete-profile')
-      } else {
-        // User lama, redirect ke dashboard
-        router.push('/')
-      }
+      // Redirect ke dashboard untuk semua user yang berhasil login
+      router.push('/')
     } else {
       // Show explicit error notification
       ElMessage.error(authStore.error || 'Login gagal. Silakan coba lagi.')

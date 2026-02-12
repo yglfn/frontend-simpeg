@@ -267,11 +267,11 @@
               <div class="form-row">
                 <div class="form-group half">
                   <label for="kode_jabatan">Kode Jabatan <span class="text-danger">*</span></label>
-                  <input type="text" id="kode_jabatan" v-model="formData.position_code" placeholder="Contoh: RKT, WKT" required />
+                  <input type="text" id="kode_jabatan" v-model="formData.kode_jabatan" placeholder="Contoh: RKT, WKT" required />
                 </div>
                 <div class="form-group half">
                   <label for="nama_jabatan">Nama Jabatan <span class="text-danger">*</span></label>
-                  <input type="text" id="nama_jabatan" v-model="formData.position_name" placeholder="Contoh: Rektor" required />
+                  <input type="text" id="nama_jabatan" v-model="formData.nama_jabatan" placeholder="Contoh: Rektor" required />
                 </div>
               </div>
 
@@ -279,7 +279,7 @@
                 <div class="form-group half">
                   <label for="jenis_jabatan">Jenis Jabatan <span class="text-danger">*</span></label>
                   <div class="select-wrapper fluid">
-                    <select id="jenis_jabatan" v-model="formData.position_type_id" required>
+                    <select id="jenis_jabatan" v-model="formData.jenis_jabatan_id" required>
                       <option value="">Pilih Jenis...</option>
                       <option v-for="jenis in positionTypes" :key="jenis.id" :value="jenis.id">
                         {{ jenis.nama_jenis }}
@@ -291,7 +291,7 @@
                 <div class="form-group half">
                   <label for="golongan">Golongan <span class="text-danger">*</span></label>
                   <div class="select-wrapper fluid">
-                    <select id="golongan" v-model="formData.group_id" required>
+                    <select id="golongan" v-model="formData.golongan_id" required>
                       <option value="">Pilih Golongan...</option>
                       <option v-for="golongan in groups" :key="golongan.id" :value="golongan.id">
                         {{ golongan.nama_golongan }}
@@ -305,17 +305,17 @@
               <div class="form-row">
                 <div class="form-group half">
                   <label for="kelas_jabatan">Kelas Jabatan <span class="text-danger">*</span></label>
-                  <input type="number" id="kelas_jabatan" v-model="formData.position_class" min="1" max="20" placeholder="1-18" required />
+                  <input type="number" id="kelas_jabatan" v-model="formData.kelas_jabatan" min="1" max="20" placeholder="1-18" required />
                 </div>
                 <div class="form-group half">
                   <label for="tunjangan">Tunjangan (Rp) <span class="text-danger">*</span></label>
-                  <input type="number" id="tunjangan" v-model="formData.position_allowance" min="0" placeholder="0" required />
+                  <input type="number" id="tunjangan" v-model="formData.tunjangan_jabatan" min="0" placeholder="0" required />
                 </div>
               </div>
 
               <div class="form-group">
                 <label for="keterangan">Keterangan / Catatan</label>
-                <textarea id="keterangan" v-model="formData.notes" rows="3" placeholder="Tambahkan keterangan opsional..."></textarea>
+                <textarea id="keterangan" v-model="formData.keterangan" rows="3" placeholder="Tambahkan keterangan opsional..."></textarea>
               </div>
 
               <div class="form-actions-right">

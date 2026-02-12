@@ -109,14 +109,19 @@ const isAdmin = computed(() => {
 
 const userRoleLabel = computed(() => {
   if (user.value?.role_id === 1) return 'Super Admin'
-  if (user.value?.role_id === 2) return 'Pegawai'
-  return user.value?.role || 'User'
+  if (user.value?.role_id === 2) return 'Admin'
+  if (user.value?.role_id === 3) return 'Pegawai'
+  // Fallback: extract name from role object or string
+  const role = user.value?.role
+  if (typeof role === 'object' && role !== null) return role.nama_role || role.kode_role || 'User'
+  return role || 'User'
 })
 
 const roleBadgeClass = computed(() => {
   const roleId = user.value?.role_id
   if (roleId === 1) return 'badge-admin'
-  if (roleId === 2) return 'badge-pegawai'
+  if (roleId === 2) return 'badge-admin'
+  if (roleId === 3) return 'badge-pegawai'
   return 'badge-default'
 })
 

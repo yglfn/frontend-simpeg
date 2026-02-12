@@ -57,11 +57,25 @@ const router = createRouter({
                     component: () => import('@/views/admin/ReferenceData.vue'),
                     meta: { requiresAuth: true }
                 },
+                {
+                    path: 'super-admin/tugas-tambahan',
+                    name: 'admin-tugas-tambahan',
+                    component: () => import('@/views/admin/TugasTambahan.vue'),
+                    meta: { requiresAuth: true }
+                },
 
                 {
                     path: 'super-admin/data-pegawai',
                     name: 'admin-data-pegawai',
                     component: () => import('@/views/admin/DataPegawai.vue'),
+                    meta: { requiresAuth: true }
+                },
+
+                // Pegawai Routes
+                {
+                    path: 'pegawai/profile',
+                    name: 'pegawai-profile',
+                    component: () => import('@/views/pegawai/PegawaiProfile.vue'),
                     meta: { requiresAuth: true }
                 },
             ]

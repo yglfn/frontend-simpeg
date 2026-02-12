@@ -76,6 +76,18 @@
               <span v-if="!isCollapsed">Unit Kerja</span>
             </router-link>
           </li>
+
+          <li class="menu-item" :class="{ active: isActiveRoute('/super-admin/tugas-tambahan') }">
+            <router-link 
+              to="/super-admin/tugas-tambahan" 
+              class="menu-link"
+              @click="handleMenuClick('tugas-tambahan')"
+              :title="isCollapsed ? 'Tugas Tambahan' : ''"
+            >
+              <i class="fas fa-tasks"></i>
+              <span v-if="!isCollapsed">Tugas Tambahan</span>
+            </router-link>
+          </li>
           
           <!-- Referensi (Read Only) -->
           <template v-if="!isCollapsed">
@@ -100,30 +112,90 @@
         <template v-else>
           <template v-if="!isCollapsed">
             <li class="menu-section">
-              <span class="section-label">MENU PEGAWAI</span>
+              <span class="section-label">PROFIL SAYA</span>
             </li>
           </template>
-          <li class="menu-item" :class="{ active: isActiveRoute('/pegawai/profile') }">
+          <li class="menu-item" :class="{ active: isActiveRoute('/pegawai/profile') && (!$route.query.tab || $route.query.tab === 'umum') }">
             <router-link 
-              to="/pegawai/profile" 
+              to="/pegawai/profile?tab=umum" 
               class="menu-link"
-              @click="handleMenuClick('profile')"
-              :title="isCollapsed ? 'Profil Saya' : ''"
+              @click="handleMenuClick('profile-umum')"
+              :title="isCollapsed ? 'Data Umum' : ''"
             >
               <i class="fas fa-user"></i>
-              <span v-if="!isCollapsed">Profil Saya</span>
+              <span v-if="!isCollapsed">Data Umum</span>
             </router-link>
           </li>
 
-          <li class="menu-item" :class="{ active: isActiveRoute('/pegawai/dokumen') }">
+          <li class="menu-item" :class="{ active: $route.query.tab === 'alamat' }">
             <router-link 
-              to="/pegawai/dokumen" 
+              to="/pegawai/profile?tab=alamat" 
               class="menu-link"
-              @click="handleMenuClick('dokumen')"
-              :title="isCollapsed ? 'Dokumen' : ''"
+              @click="handleMenuClick('profile-alamat')"
+              :title="isCollapsed ? 'Alamat' : ''"
             >
-              <i class="fas fa-file-upload"></i>
-              <span v-if="!isCollapsed">Dokumen</span>
+              <i class="fas fa-map-marker-alt"></i>
+              <span v-if="!isCollapsed">Alamat</span>
+            </router-link>
+          </li>
+
+          <template v-if="!isCollapsed">
+            <li class="menu-section">
+              <span class="section-label">KEPEGAWAIAN</span>
+            </li>
+          </template>
+
+          <li class="menu-item" :class="{ active: $route.query.tab === 'pekerjaan' }">
+            <router-link 
+              to="/pegawai/profile?tab=pekerjaan" 
+              class="menu-link"
+              @click="handleMenuClick('profile-pekerjaan')"
+              :title="isCollapsed ? 'Pekerjaan' : ''"
+            >
+              <i class="fas fa-briefcase"></i>
+              <span v-if="!isCollapsed">Pekerjaan</span>
+            </router-link>
+          </li>
+
+          <li class="menu-item" :class="{ active: $route.query.tab === 'riwayat-jabatan' }">
+            <router-link 
+              to="/pegawai/profile?tab=riwayat-jabatan" 
+              class="menu-link"
+              @click="handleMenuClick('profile-riwayat-jabatan')"
+              :title="isCollapsed ? 'Riwayat Jabatan' : ''"
+            >
+              <i class="fas fa-sitemap"></i>
+              <span v-if="!isCollapsed">Riwayat Jabatan</span>
+            </router-link>
+          </li>
+
+          <template v-if="!isCollapsed">
+            <li class="menu-section">
+              <span class="section-label">RIWAYAT</span>
+            </li>
+          </template>
+
+          <li class="menu-item" :class="{ active: $route.query.tab === 'pendidikan' }">
+            <router-link 
+              to="/pegawai/profile?tab=pendidikan" 
+              class="menu-link"
+              @click="handleMenuClick('profile-pendidikan')"
+              :title="isCollapsed ? 'Pendidikan' : ''"
+            >
+              <i class="fas fa-graduation-cap"></i>
+              <span v-if="!isCollapsed">Pendidikan</span>
+            </router-link>
+          </li>
+
+          <li class="menu-item" :class="{ active: $route.query.tab === 'keluarga' }">
+            <router-link 
+              to="/pegawai/profile?tab=keluarga" 
+              class="menu-link"
+              @click="handleMenuClick('profile-keluarga')"
+              :title="isCollapsed ? 'Keluarga' : ''"
+            >
+              <i class="fas fa-users"></i>
+              <span v-if="!isCollapsed">Keluarga</span>
             </router-link>
           </li>
         </template>
