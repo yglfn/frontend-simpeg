@@ -139,25 +139,15 @@
             </router-link>
           </li>
 
+
+
           <template v-if="!isCollapsed">
             <li class="menu-section">
-              <span class="section-label">KEPEGAWAIAN</span>
+              <span class="section-label">RIWAYAT</span>
             </li>
           </template>
 
-          <li class="menu-item" :class="{ active: $route.query.tab === 'pekerjaan' }">
-            <router-link 
-              to="/pegawai/profile?tab=pekerjaan" 
-              class="menu-link"
-              @click="handleMenuClick('profile-pekerjaan')"
-              :title="isCollapsed ? 'Pekerjaan' : ''"
-            >
-              <i class="fas fa-briefcase"></i>
-              <span v-if="!isCollapsed">Pekerjaan</span>
-            </router-link>
-          </li>
-
-          <li class="menu-item" :class="{ active: $route.query.tab === 'riwayat-jabatan' }">
+                    <li class="menu-item" :class="{ active: $route.query.tab === 'riwayat-jabatan' }">
             <router-link 
               to="/pegawai/profile?tab=riwayat-jabatan" 
               class="menu-link"
@@ -168,12 +158,6 @@
               <span v-if="!isCollapsed">Riwayat Jabatan</span>
             </router-link>
           </li>
-
-          <template v-if="!isCollapsed">
-            <li class="menu-section">
-              <span class="section-label">RIWAYAT</span>
-            </li>
-          </template>
 
           <li class="menu-item" :class="{ active: $route.query.tab === 'pendidikan' }">
             <router-link 
@@ -196,6 +180,18 @@
             >
               <i class="fas fa-users"></i>
               <span v-if="!isCollapsed">Keluarga</span>
+            </router-link>
+          </li>
+
+          <li class="menu-item" :class="{ active: $route.query.tab === 'keamanan' }">
+            <router-link 
+              to="/pegawai/profile?tab=keamanan" 
+              class="menu-link"
+              @click="handleMenuClick('profile-keamanan')"
+              :title="isCollapsed ? 'Keamanan' : ''"
+            >
+              <i class="fas fa-shield-alt"></i>
+              <span v-if="!isCollapsed">Keamanan</span>
             </router-link>
           </li>
         </template>
@@ -296,12 +292,13 @@ defineExpose({
 })
 </script>
 
+
 <style scoped>
-/* Sidebar Base Styles - Warna tema konsisten dengan navbar */
+/* Sidebar Base Styles */
 .sidebar {
   width: 250px;
-  background: #12131f;
-  color: white;
+  background: #ffffff;
+  color: #1e293b; /* Slate-800 */
   height: 100vh;
   position: fixed;
   left: 0;
@@ -312,9 +309,9 @@ defineExpose({
   flex-direction: column;
   overflow-y: auto;
   overflow-x: hidden;
-  border-right: 1px solid rgba(255, 255, 255, 0.07);
-  margin-top: 90px; /* Offset for Navbar */
-  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
+  border-right: 1px solid #e2e8f0; /* Slate-200 */
+  margin-top: 90px;
+  box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
 }
 
 .sidebar.collapsed {
@@ -326,13 +323,13 @@ defineExpose({
   height: 60px;
   display: flex;
   align-items: center;
-  justify-content: flex-end; /* Expanded: Icon on right */
+  justify-content: flex-end;
   padding: 0 20px;
-  border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+  border-bottom: 1px solid #f1f5f9; /* Slate-100 */
 }
 
 .sidebar.collapsed .sidebar-header {
-  justify-content: center; /* Collapsed: Icon centered */
+  justify-content: center;
   padding: 0;
 }
 
@@ -340,7 +337,7 @@ defineExpose({
 .hamburger-toggle {
   background: transparent;
   border: none;
-  color: #a0aec0;
+  color: #64748b; /* Slate-500 */
   font-size: 1.2rem;
   cursor: pointer;
   width: 40px;
@@ -353,13 +350,9 @@ defineExpose({
 }
 
 .hamburger-toggle:hover {
-  background: rgba(255, 255, 255, 0.1);
-  color: #fff;
+  background: #f1f5f9; /* Slate-100 */
+  color: #334155; /* Slate-700 */
 }
-
-
-
-
 
 /* Sidebar Menu */
 .sidebar-menu {
@@ -381,11 +374,10 @@ defineExpose({
 
 .section-label {
   font-size: 0.7rem;
-  color: #95a5a6;
+  color: #94a3b8; /* Slate-400 */
   text-transform: uppercase;
   letter-spacing: 1px;
-  font-weight: 600;
-  opacity: 0.8;
+  font-weight: 700;
 }
 
 .menu-item {
@@ -398,7 +390,7 @@ defineExpose({
   display: flex;
   align-items: center;
   padding: 12px 16px;
-  color: #ecf0f1;
+  color: #64748b; /* Slate-500 */
   text-decoration: none;
   transition: all 0.3s ease;
   position: relative;
@@ -407,15 +399,15 @@ defineExpose({
 
 /* Hover Effect */
 .menu-link:hover {
-  background: rgba(255, 255, 255, 0.05);
-  color: white;
+  background: #f8fafc; /* Slate-50 */
+  color: #0f172a; /* Slate-900 */
   padding-left: 20px;
 }
 
 /* Active Menu */
 .menu-item.active .menu-link {
-  background: rgba(124, 131, 245, 0.15);
-  color: #9da5f8;
+  background: #eff6ff; /* Blue-50 */
+  color: #2563eb; /* Blue-600 */
   box-shadow: none;
   font-weight: 600;
 }
@@ -427,7 +419,7 @@ defineExpose({
   top: 0;
   bottom: 0;
   width: 3px;
-  background: #7c83f5;
+  background: #3b82f6; /* Blue-500 */
   border-radius: 0 4px 4px 0;
 }
 
@@ -436,17 +428,17 @@ defineExpose({
   font-size: 1.1rem;
   min-width: 24px;
   text-align: center;
-  color: #bdc3c7;
+  color: #94a3b8; /* Slate-400 */
   transition: all 0.3s ease;
 }
 
 .menu-item.active .menu-link i {
-  color: #7c83f5;
+  color: #3b82f6; /* Blue-500 */
   transform: scale(1.1);
 }
 
 .menu-link:hover i {
-  color: #fff;
+  color: #3b82f6; /* Blue-500 */
   transform: scale(1.1);
 }
 
@@ -455,7 +447,7 @@ defineExpose({
   margin-left: 12px;
   white-space: nowrap;
   font-size: 0.9rem;
-  font-weight: 400;
+  font-weight: 500;
   transition: all 0.3s ease;
 }
 
@@ -468,7 +460,7 @@ defineExpose({
 }
 
 .sidebar.collapsed .menu-item.active .menu-link {
-  background: rgba(124, 131, 245, 0.15);
+  background: #eff6ff; /* Blue-50 */
 }
 
 .sidebar.collapsed .menu-item.active .menu-link::before {
@@ -491,15 +483,15 @@ defineExpose({
   left: calc(100% + 10px);
   top: 50%;
   transform: translateY(-50%);
-  background: #2c3e50;
+  background: #1e293b; /* Slate-800 */
   color: white;
   padding: 8px 12px;
   border-radius: 6px;
   font-size: 0.85rem;
   white-space: nowrap;
   z-index: 1000;
-  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.2);
-  border-left: 3px solid #3498db;
+  box-shadow: 2px 2px 10px rgba(0, 0, 0, 0.1);
+  border-left: 3px solid #3b82f6;
   font-weight: 500;
   pointer-events: none;
 }
@@ -507,11 +499,10 @@ defineExpose({
 /* Sidebar Footer */
 .sidebar-footer {
   padding: 20px 15px;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
+  border-top: 1px solid #f1f5f9;
   font-size: 0.8rem;
-  color: #bdc3c7;
-  background: #12131f;
-  backdrop-filter: blur(10px);
+  color: #64748b;
+  background: #ffffff;
 }
 
 .system-info {
@@ -520,8 +511,8 @@ defineExpose({
 
 .system-version {
   margin: 0 0 8px 0;
-  font-weight: 400;
-  opacity: 0.9;
+  font-weight: 500;
+  color: #cbd5e1;
 }
 
 .system-status {
@@ -530,30 +521,27 @@ defineExpose({
   align-items: center;
   justify-content: center;
   gap: 8px;
-  font-weight: 500;
+  font-weight: 600;
+  color: #475569;
 }
 
 .status-active {
-  color: #2ecc71;
+  color: #22c55e; /* Green-500 */
   font-size: 0.6rem;
   animation: pulse 2s infinite;
 }
 
 @keyframes pulse {
-  0%, 100% {
-    opacity: 1;
-  }
-  50% {
-    opacity: 0.6;
-  }
+  0%, 100% { opacity: 1; }
+  50% { opacity: 0.6; }
 }
 
 .debug-info {
   text-align: center;
   margin-top: 15px;
   padding-top: 15px;
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  color: #95a5a6;
+  border-top: 1px solid #f1f5f9;
+  color: #94a3b8;
   font-family: 'Courier New', monospace;
   font-size: 0.7rem;
 }
@@ -561,13 +549,12 @@ defineExpose({
 .sidebar-footer-collapsed {
   padding: 20px 0;
   text-align: center;
-  border-top: 1px solid rgba(255, 255, 255, 0.07);
-  background: #12131f;
-  backdrop-filter: blur(10px);
+  border-top: 1px solid #f1f5f9;
+  background: #ffffff;
 }
 
 .sidebar-footer-collapsed .status-active {
-  color: #2ecc71;
+  color: #22c55e;
   font-size: 0.8rem;
   animation: pulse 2s infinite;
 }
@@ -578,17 +565,16 @@ defineExpose({
 }
 
 .sidebar-menu::-webkit-scrollbar-track {
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 4px;
+  background: transparent;
 }
 
 .sidebar-menu::-webkit-scrollbar-thumb {
-  background: rgba(124, 131, 245, 0.5);
+  background: #cbd5e1; /* Slate-300 */
   border-radius: 4px;
 }
 
 .sidebar-menu::-webkit-scrollbar-thumb:hover {
-  background: rgba(124, 131, 245, 0.8);
+  background: #94a3b8; /* Slate-400 */
 }
 
 /* Responsive */
@@ -602,7 +588,7 @@ defineExpose({
 
   .sidebar:not(.collapsed) {
     transform: translateX(0);
-    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.3);
+    box-shadow: 5px 0 20px rgba(0, 0, 0, 0.1);
   }
 
   .sidebar.collapsed {
@@ -628,37 +614,26 @@ defineExpose({
   }
 }
 
-
-
 /* Menu item animation */
 .menu-link {
   animation: slideIn 0.3s ease-out;
 }
 
 @keyframes slideIn {
-  from {
-    opacity: 0;
-    transform: translateX(-10px);
-  }
-  to {
-    opacity: 1;
-    transform: translateX(0);
-  }
+  from { opacity: 0; transform: translateX(-10px); }
+  to { opacity: 1; transform: translateX(0); }
 }
 
-/* Smooth transition untuk sidebar */
 .sidebar {
   transition-property: width, transform;
 }
 
-/* Style untuk menu yang disable/disabled */
 .menu-item:not(.active) .menu-link:disabled {
   opacity: 0.5;
   cursor: not-allowed;
   pointer-events: none;
 }
 
-/* Highlight untuk hover state */
 .menu-item:not(.active) .menu-link:hover {
   transform: translateX(5px);
 }
