@@ -137,15 +137,7 @@
               <i class="fas fa-map-marker-alt"></i>
               <span v-if="!isCollapsed">Alamat</span>
             </router-link>
-          </li>
-
-
-
-          <template v-if="!isCollapsed">
-            <li class="menu-section">
-              <span class="section-label">RIWAYAT</span>
-            </li>
-          </template>
+          </li> 
 
                     <li class="menu-item" :class="{ active: $route.query.tab === 'riwayat-jabatan' }">
             <router-link 
@@ -155,7 +147,7 @@
               :title="isCollapsed ? 'Riwayat Jabatan' : ''"
             >
               <i class="fas fa-sitemap"></i>
-              <span v-if="!isCollapsed">Riwayat Jabatan</span>
+              <span v-if="!isCollapsed">Jabatan</span>
             </router-link>
           </li>
 
