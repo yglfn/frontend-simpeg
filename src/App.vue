@@ -12,12 +12,14 @@
     <router-view v-slot="{ Component }">
       <component :is="Component" />
     </router-view>
+    <ToastNotification />
   </div>
 </template>
 
 <script setup>
 import { ref, onMounted } from 'vue'
 import { useAuthStore } from '@/stores/auth'
+import ToastNotification from '@/components/common/ToastNotification.vue'
 
 const authStore = useAuthStore()
 const isLoading = ref(true)

@@ -376,8 +376,10 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import api from '@/services/api'
-import { ElMessage } from 'element-plus'
+import { useToast } from '@/composables/useToast'
 import { debounce } from 'lodash'
+
+const { showToast } = useToast()
 
 // State
 const loading = ref(false)
@@ -548,11 +550,11 @@ const createJabatan = async () => {
     const response = await api.post('super-admin/jabatan', payload)
     
     if (response.data.success) {
-      ElMessage.success('Jabatan berhasil ditambahkan')
+      showToast('Jabatan berhasil ditambahkan')
       closeFormModal()
       fetchJabatan()
     } else {
-      ElMessage.error(response.data.message || 'Gagal menambah jabatan')
+      showToast(response.data.message || 'Gagal menambah jabatan', 'error')
     }
   } catch (error) {
     console.error('Error creating jabatan:', error.response || error)
@@ -561,9 +563,9 @@ const createJabatan = async () => {
     if (error.response?.status === 422 && error.response?.data?.errors) {
       const errors = error.response.data.errors
       const firstError = Object.values(errors)[0]?.[0]
-      ElMessage.error(firstError || 'Data tidak valid')
+      showToast(firstError || 'Data tidak valid', 'error')
     } else {
-      ElMessage.error(error.response?.data?.message || 'Gagal menambah jabatan')
+      showToast(error.response?.data?.message || 'Gagal menambah jabatan', 'error')
     }
   } finally {
     submitting.value = false
@@ -590,11 +592,11 @@ const updateJabatan = async () => {
     const response = await api.put(`super-admin/jabatan/${selectedJabatan.value.id}`, payload)
     
     if (response.data.success) {
-      ElMessage.success('Jabatan berhasil diperbarui')
+      showToast('Jabatan berhasil diperbarui')
       closeFormModal()
       fetchJabatan()
     } else {
-      ElMessage.error(response.data.message || 'Gagal memperbarui jabatan')
+      showToast(response.data.message || 'Gagal memperbarui jabatan', 'error')
     }
   } catch (error) {
     console.error('Error updating jabatan:', error.response || error)
@@ -602,9 +604,9 @@ const updateJabatan = async () => {
     if (error.response?.status === 422 && error.response?.data?.errors) {
       const errors = error.response.data.errors
       const firstError = Object.values(errors)[0]?.[0]
-      ElMessage.error(firstError || 'Data tidak valid')
+      showToast(firstError || 'Data tidak valid', 'error')
     } else {
-      ElMessage.error(error.response?.data?.message || 'Gagal memperbarui jabatan')
+      showToast(error.response?.data?.message || 'Gagal memperbarui jabatan', 'error')
     }
   } finally {
     submitting.value = false
@@ -618,15 +620,15 @@ const deleteJabatan = async () => {
     const response = await api.delete(`super-admin/jabatan/${selectedJabatan.value.id}`)
     
     if (response.data.success) {
-      ElMessage.success('Jabatan berhasil dihapus')
+      showToast('Jabatan berhasil dihapus')
       closeDeleteModal()
       fetchJabatan()
     } else {
-      ElMessage.error(response.data.message || 'Gagal menghapus jabatan')
+      showToast(response.data.message || 'Gagal menghapus jabatan', 'error')
     }
   } catch (error) {
     console.error('Error deleting jabatan:', error.response || error)
-    ElMessage.error(error.response?.data?.message || 'Gagal menghapus jabatan')
+    showToast(error.response?.data?.message || 'Gagal menghapus jabatan', 'error')
   } finally {
     deleting.value = false
   }

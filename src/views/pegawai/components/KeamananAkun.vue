@@ -47,7 +47,9 @@
 <script setup>
 import { ref, reactive, computed } from 'vue'
 import { useAuthStore } from '@/stores/auth'
-import { ElMessage } from 'element-plus'
+import { useToast } from '@/composables/useToast'
+
+const { showToast } = useToast()
 import api from '@/services/api'
 
 const authStore = useAuthStore()
@@ -74,14 +76,14 @@ const changePassword = async () => {
     
     try {
         await api.post('/change-password', form)
-        ElMessage.success('Password berhasil diperbarui')
+        showToast('Password berhasil diperbarui')
         form.current_password = ''
         form.new_password = ''
         form.new_password_confirmation = ''
     } catch (e) {
         console.error('Error changing password', e)
         error.value = e.response?.data?.message || 'Gagal mengubah password'
-        ElMessage.error(error.value)
+        showToast(error.value, 'error')
     } finally {
         saving.value = false
     }

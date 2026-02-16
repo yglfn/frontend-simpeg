@@ -224,8 +224,10 @@
 
 <script setup>
 import { ref, reactive, watch } from 'vue'
-import { ElMessage } from 'element-plus'
 import api from '@/services/api'
+import { useToast } from '@/composables/useToast'
+
+const { showToast } = useToast()
 
 const props = defineProps({
     profileId: {
@@ -407,17 +409,17 @@ const cancelEdit = () => {
 const save = async () => {
     // Basic validation
     if (!form.utama.desa_kelurahan_id) {
-        ElMessage.warning('Silakan pilih Desa/Kelurahan untuk Alamat KTP')
+        showToast('Silakan pilih Desa/Kelurahan untuk Alamat KTP', 'error')
         return
     }
     if (!form.email || !form.telepon) {
-        ElMessage.warning('Email dan Telepon wajib diisi')
+        showToast('Email dan Telepon wajib diisi', 'error')
         return
     }
 
     // If "Sama dengan KTP" is checked, sync again
-    const domDesaId = samaKTP.value ? form.utama.desa_kelurahan_id : form.domisili.desa_kelurahan_id
     const domAlamat = samaKTP.value ? form.utama.alamat : form.domisili.alamat
+    const domDesaId = samaKTP.value ? form.utama.desa_kelurahan_id : form.domisili.desa_kelurahan_id
 
     saving.value = true
     try {
@@ -434,7 +436,7 @@ const save = async () => {
             telepon: form.telepon,
             kode_pos: form.kode_pos
         })
-        ElMessage.success('Data alamat berhasil diperbarui')
+        showToast('Data alamat berhasil diperbarui')
         await loadData()
         editMode.value = false
         samaKTP.value = false
@@ -443,9 +445,9 @@ const save = async () => {
         if (e.response?.data?.errors) {
             const errors = e.response.data.errors
             const firstError = Object.values(errors)[0]
-            ElMessage.error(Array.isArray(firstError) ? firstError[0] : firstError)
+            showToast(Array.isArray(firstError) ? firstError[0] : firstError, 'error')
         } else {
-            ElMessage.error(e.response?.data?.message || 'Gagal menyimpan alamat')
+            showToast(e.response?.data?.message || 'Gagal menyimpan alamat', 'error')
         }
     } finally {
         saving.value = false

@@ -370,8 +370,10 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import api from '@/services/api'
-import { ElMessage } from 'element-plus'
+import { useToast } from '@/composables/useToast'
 import { debounce } from 'lodash'
+
+const { showToast } = useToast()
 
 const loading = ref(false)
 const errorMessage = ref('')
@@ -483,13 +485,13 @@ const createUnitKerja = async () => {
     submitting.value = true
     const response = await api.post('/super-admin/unit-kerja', formData.value)
     if (response.data.success) {
-        ElMessage.success('Unit kerja berhasil ditambahkan')
+        showToast('Unit kerja berhasil ditambahkan')
         closeFormModal()
         fetchUnitKerja()
         fetchParentUnits()
     }
   } catch (error) {
-    ElMessage.error(error.response?.data?.message || 'Gagal membuat unit kerja')
+    showToast(error.response?.data?.message || 'Gagal membuat unit kerja', 'error')
   } finally {
     submitting.value = false
   }
@@ -500,13 +502,13 @@ const updateUnitKerja = async () => {
     submitting.value = true
     const response = await api.put(`/super-admin/unit-kerja/${selectedUnit.value.id}`, formData.value)
     if (response.data.success) {
-        ElMessage.success('Unit kerja berhasil diperbarui')
+        showToast('Unit kerja berhasil diperbarui')
         closeFormModal()
         fetchUnitKerja()
         fetchParentUnits()
     }
   } catch (error) {
-    ElMessage.error(error.response?.data?.message || 'Gagal mengupdate unit kerja')
+    showToast(error.response?.data?.message || 'Gagal mengupdate unit kerja', 'error')
   } finally {
     submitting.value = false
   }
@@ -517,13 +519,13 @@ const deleteUnitKerja = async () => {
     deleting.value = true
     const response = await api.delete(`/super-admin/unit-kerja/${selectedUnit.value.id}`)
     if (response.data.success) {
-        ElMessage.success('Unit kerja berhasil dihapus')
+        showToast('Unit kerja berhasil dihapus')
         closeDeleteModal()
         fetchUnitKerja()
         fetchParentUnits()
     }
   } catch (error) {
-    ElMessage.error('Gagal menghapus unit kerja')
+    showToast('Gagal menghapus unit kerja', 'error')
   } finally {
     deleting.value = false
   }

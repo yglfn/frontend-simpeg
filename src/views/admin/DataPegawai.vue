@@ -947,7 +947,9 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import api from '@/services/api'
-import { ElMessage } from 'element-plus'
+import { useToast } from '@/composables/useToast'
+
+const { showToast } = useToast()
 import { debounce } from 'lodash'
 
 // State
@@ -1085,7 +1087,7 @@ const createEmployee = async () => {
     }
     
     await api.post('/super-admin/profile-pegawai', payload)
-    ElMessage.success('Pegawai berhasil ditambahkan')
+    showToast('Pegawai berhasil ditambahkan')
     closeFormModal()
     fetchEmployees()
   } catch (error) {
@@ -1094,9 +1096,9 @@ const createEmployee = async () => {
         const errors = error.response.data.errors
         // Show first error message
         const firstError = Object.values(errors)[0][0]
-        ElMessage.error(firstError)
+        showToast(firstError, 'error')
     } else {
-        ElMessage.error(error.response?.data?.message || 'Gagal menambah pegawai')
+        showToast(error.response?.data?.message || 'Gagal menambah pegawai', 'error')
     }
   } finally {
     submitting.value = false
@@ -1113,7 +1115,7 @@ const updateEmployee = async () => {
     }
     
     await api.put(`/super-admin/profile-pegawai/${selectedEmployee.value.profile_id}`, payload)
-    ElMessage.success('Pegawai berhasil diperbarui')
+    showToast('Pegawai berhasil diperbarui')
     closeFormModal()
     await fetchEmployees()
 
@@ -1147,9 +1149,9 @@ const updateEmployee = async () => {
     if (error.response?.status === 422 && error.response?.data?.errors) {
         const errors = error.response.data.errors
         const firstError = Object.values(errors)[0][0]
-        ElMessage.error(firstError)
+        showToast(firstError, 'error')
     } else {
-        ElMessage.error(error.response?.data?.message || 'Gagal memperbarui pegawai')
+        showToast(error.response?.data?.message || 'Gagal memperbarui pegawai', 'error')
     }
   } finally {
     submitting.value = false
@@ -1160,11 +1162,11 @@ const deleteEmployee = async () => {
   try {
     deleting.value = true
     await api.delete(`/super-admin/profile-pegawai/${selectedEmployee.value.profile_id}`)
-    ElMessage.success('Pegawai berhasil dihapus')
+    showToast('Pegawai berhasil dihapus')
     closeDeleteModal()
     fetchEmployees()
   } catch (error) {
-    ElMessage.error('Gagal menghapus pegawai')
+    showToast('Gagal menghapus pegawai', 'error')
   } finally {
     deleting.value = false
   }
@@ -1242,7 +1244,7 @@ const openEditModal = async (employee) => {
         }
     } catch (error) {
         console.error('Error fetching full detail for edit:', error)
-        ElMessage.error('Gagal memuat detail data untuk edit')
+        showToast('Gagal memuat detail data untuk edit', 'error')
         showFormModal.value = false
     }
 }
@@ -1295,7 +1297,7 @@ const resetForm = () => {
 // Password Management Logic
 const openPasswordModal = async (employee) => {
     if (!employee.profile?.user?.id) {
-        ElMessage.warning('Pegawai ini belum memiliki akun user.')
+        showToast('Pegawai ini belum memiliki akun user.', 'warning')
         return
     }
     
@@ -1337,7 +1339,7 @@ const isCustomPasswordValid = computed(() => {
 
 const resetPasswordToDefault = async () => {
     if (!selectedEmployee.value?.profile?.tanggal_lahir) {
-        ElMessage.error('Tanggal lahir tidak tersedia, tidak bisa reset default.')
+        showToast('Tanggal lahir tidak tersedia, tidak bisa reset default.', 'error')
         return
     }
     
@@ -1349,11 +1351,11 @@ const resetPasswordToDefault = async () => {
         await api.post(`/super-admin/users/${selectedEmployee.value.profile.user.id}/reset-password`, {
             new_password: defaultPass
         })
-        ElMessage.success(`Password berhasil direset menjadi: ${defaultPass}`)
+        showToast(`Password berhasil direset menjadi: ${defaultPass}`)
         closePasswordModal()
     } catch (error) {
         console.error('Reset Password Error', error)
-        ElMessage.error('Gagal mereset password.')
+        showToast('Gagal mereset password.', 'error')
     } finally {
         submittingPassword.value = false
     }
@@ -1367,11 +1369,11 @@ const changeCustomPassword = async () => {
         await api.post(`/super-admin/users/${selectedEmployee.value.profile.user.id}/reset-password`, {
             new_password: customPassword.value
         })
-        ElMessage.success('Password berhasil diubah.')
+        showToast('Password berhasil diubah.')
         closePasswordModal()
     } catch (error) {
         console.error('Change Password Error', error)
-        ElMessage.error('Gagal mengubah password.')
+        showToast('Gagal mengubah password.', 'error')
     } finally {
         submittingPassword.value = false
     }

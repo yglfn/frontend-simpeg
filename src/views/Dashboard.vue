@@ -331,9 +331,11 @@
 import { ref, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
-import { ElMessage } from 'element-plus'
+import { useToast } from '@/composables/useToast'
 import api from '@/services/api'
 import PegawaiDashboard from '@/views/dashboard/PegawaiDashboard.vue'
+
+const { showToast } = useToast()
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -436,7 +438,7 @@ const fetchDashboardData = async () => {
   } catch (error) {
     console.error('Error loading dashboard:', error)
     errorMessage.value = error.response?.data?.message || 'Gagal terhubung ke server'
-    ElMessage.error('Gagal memuat data dashboard')
+    showToast('Gagal memuat data dashboard', 'error')
   } finally {
     isLoading.value = false
   }

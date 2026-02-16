@@ -75,9 +75,11 @@
 
 <script setup>
 import { ref, reactive, watch, onMounted } from 'vue'
-import { ElMessage } from 'element-plus'
 import api from '@/services/api'
+import { useToast } from '@/composables/useToast'
 import { formatDate } from '@/utils/format' 
+
+const { showToast } = useToast() 
 
 const props = defineProps({
     profileId: {
@@ -157,12 +159,12 @@ const save = async () => {
     saving.value = true
     try {
         await api.put(`/pegawai/profile/umum/${props.profileId}`, form)
-        ElMessage.success('Data umum berhasil diperbarui')
+        showToast('Data umum berhasil diperbarui')
         await loadData()
         editMode.value = false
     } catch (e) {
         console.error('Error saving Data Umum', e)
-        ElMessage.error('Gagal menyimpan data umum')
+        showToast('Gagal menyimpan data umum', 'error')
     } finally {
         saving.value = false
     }

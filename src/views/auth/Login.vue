@@ -149,8 +149,9 @@
 import { ref, reactive, computed, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
 import { useAuthStore } from '@/stores/auth'
+import { useToast } from '@/composables/useToast'
 
-import { ElMessage } from 'element-plus'
+const { showToast } = useToast()
 
 const router = useRouter()
 const authStore = useAuthStore()
@@ -173,25 +174,17 @@ const togglePasswordVisibility = () => {
 }
 
 const handleForgotPassword = () => {
-  ElMessage.info({
-    message: 'Silakan hubungi Biro Kepegawaian Universitas untuk reset password. Email: kepegawaian@uinib.ac.id',
-    duration: 5000,
-    showClose: true
-  })
+  showToast('Silakan hubungi Biro Kepegawaian Universitas untuk reset password. Email: kepegawaian@uinib.ac.id', 'info')
 }
 
 const showSupportInfo = () => {
-  ElMessage.info({
-    message: 'Bantuan: Hubungi Biro Kepegawaian Universitas (0751) 30071',
-    duration: 5000,
-    showClose: true
-  })
+  showToast('Bantuan: Hubungi Biro Kepegawaian Universitas (0751) 30071', 'info')
 }
 
 const handleLogin = async () => {
   // Validasi
   if (!form.username.trim() || !form.password) {
-    ElMessage.warning('Silakan lengkapi username dan password')
+    showToast('Silakan lengkapi username dan password', 'error')
     return
   }
 
@@ -225,17 +218,17 @@ const handleLogin = async () => {
     const result = await authStore.login(credentials)
 
     if (result && result.success !== false) {
-      ElMessage.success('Login berhasil! Selamat datang.')
+      showToast('Login berhasil! Selamat datang.')
       
       // Redirect ke dashboard untuk semua user yang berhasil login
       router.push('/')
     } else {
       // Show explicit error notification
-      ElMessage.error(authStore.error || 'Login gagal. Silakan coba lagi.')
+      showToast(authStore.error || 'Login gagal. Silakan coba lagi.', 'error')
     }
   } catch (error) {
     console.error('Login error:', error)
-    ElMessage.error('Terjadi kesalahan pada sistem. Silakan coba lagi nanti.')
+    showToast('Terjadi kesalahan pada sistem. Silakan coba lagi nanti.', 'error')
   } finally {
     loading.value = false
   }

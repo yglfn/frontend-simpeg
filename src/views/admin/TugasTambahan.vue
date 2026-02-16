@@ -251,8 +251,10 @@
 <script setup>
 import { ref, computed, onMounted } from 'vue'
 import api from '@/services/api'
-import { ElMessage } from 'element-plus'
+import { useToast } from '@/composables/useToast'
 import { debounce } from 'lodash'
+
+const { showToast } = useToast()
 
 // State
 const loading = ref(false)
@@ -377,12 +379,12 @@ const createData = async () => {
     try {
         submitting.value = true
         await api.post('/super-admin/tugas-tambahan', formData.value)
-        ElMessage.success('Berhasil menambahkan tugas tambahan')
+        showToast('Berhasil menambahkan tugas tambahan')
         closeFormModal()
         fetchData()
     } catch (error) {
         console.error('Create error:', error)
-        ElMessage.error(error.response?.data?.message || 'Gagal menambahkan data')
+        showToast(error.response?.data?.message || 'Gagal menambahkan data', 'error')
     } finally {
         submitting.value = false
     }
@@ -392,12 +394,12 @@ const updateData = async () => {
     try {
         submitting.value = true
         await api.put(`/super-admin/tugas-tambahan/${selectedItem.value.id}`, formData.value)
-        ElMessage.success('Berhasil memperbarui data')
+        showToast('Berhasil memperbarui data')
         closeFormModal()
         fetchData()
     } catch (error) {
         console.error('Update error:', error)
-        ElMessage.error(error.response?.data?.message || 'Gagal memperbarui data')
+        showToast(error.response?.data?.message || 'Gagal memperbarui data', 'error')
     } finally {
         submitting.value = false
     }
@@ -407,12 +409,12 @@ const deleteData = async () => {
     try {
         deleting.value = true
         await api.delete(`/super-admin/tugas-tambahan/${selectedItem.value.id}`)
-        ElMessage.success('Data berhasil dihapus')
+        showToast('Data berhasil dihapus')
         closeDeleteModal()
         fetchData()
     } catch (error) {
         console.error('Delete error:', error)
-        ElMessage.error(error.response?.data?.message || 'Gagal menghapus data')
+        showToast(error.response?.data?.message || 'Gagal menghapus data', 'error')
     } finally {
         deleting.value = false
     }

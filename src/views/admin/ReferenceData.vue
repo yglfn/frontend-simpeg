@@ -142,7 +142,9 @@
 <script setup>
 import { ref, computed } from 'vue'
 import api from '@/services/api'
-import { ElMessage } from 'element-plus'
+import { useToast } from '@/composables/useToast'
+
+const { showToast } = useToast()
 
 // State (Sama seperti sebelumnya)
 const selectedCategory = ref('')
@@ -216,7 +218,7 @@ const fetchData = async () => {
     searchQuery.value = ''
   } catch (error) {
     console.error('Failed to fetch references', error)
-    ElMessage.error('Gagal memuat data referensi')
+    showToast('Gagal memuat data referensi', 'error')
     dataList.value = []
   } finally {
     loading.value = false
