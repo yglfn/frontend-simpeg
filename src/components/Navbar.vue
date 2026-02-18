@@ -101,7 +101,7 @@ const showUserMenu = ref(false)
 
 const user = computed(() => authStore.user)
 const userName = computed(() => user.value?.username || 'Pengguna')
-const userPhoto = computed(() => user.value?.photo_url || null)
+const userPhoto = computed(() => user.value?.foto_url || null)
 
 const isAdmin = computed(() => {
   return user.value?.role_id === 1 || String(user.value?.role?.kode_role).includes('ADMIN')

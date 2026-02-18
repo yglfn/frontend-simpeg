@@ -21,8 +21,9 @@
                     </thead>
                     <tbody class="divide-y divide-slate-100">
                         <tr v-for="rj in list" :key="rj.id" class="hover:bg-slate-50/80 transition-colors">
-                            <td class="p-4 font-medium text-slate-800">{{ rj.jabatan?.nama_jabatan || '-' }}</td>
-                            <td class="p-4 text-slate-600">{{ rj.unit_kerja?.nama_unit || '-' }}</td>
+                            <td class="p-4 font-medium text-slate-800">{{ rj.nama_jabatan || '-' }}</td>
+                            <td class="p-4 text-slate-600">{{ rj.nama_unit || '-' }}</td>
+
                             <td class="p-4 text-slate-600">{{ formatDate(rj.tmt_jabatan) }}</td>
                             <td class="p-4 text-slate-600">{{ rj.no_sk || '-' }}</td>
                             <td class="p-4">

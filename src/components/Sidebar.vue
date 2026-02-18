@@ -147,7 +147,7 @@
               :title="isCollapsed ? 'Riwayat Jabatan' : ''"
             >
               <i class="fas fa-sitemap"></i>
-              <span v-if="!isCollapsed">Jabatan</span>
+              <span v-if="!isCollapsed"> Riwayat Jabatan</span>
             </router-link>
           </li>
 
@@ -159,7 +159,7 @@
               :title="isCollapsed ? 'Pendidikan' : ''"
             >
               <i class="fas fa-graduation-cap"></i>
-              <span v-if="!isCollapsed">Pendidikan</span>
+              <span v-if="!isCollapsed"> Riwayat Pendidikan</span>
             </router-link>
           </li>
 
@@ -171,7 +171,7 @@
               :title="isCollapsed ? 'Keluarga' : ''"
             >
               <i class="fas fa-users"></i>
-              <span v-if="!isCollapsed">Keluarga</span>
+              <span v-if="!isCollapsed"> Data Keluarga</span>
             </router-link>
           </li>
 

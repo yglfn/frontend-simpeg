@@ -14,12 +14,20 @@
          <div class="relative z-10 flex flex-col items-start gap-8">
             <div class="flex flex-col md:flex-row items-center gap-8 w-full border-b border-slate-100 pb-6">
                 <div class="relative shrink-0">
-                   <div class="w-32 h-32 rounded-xl overflow-hidden ring-4 ring-white shadow-lg bg-slate-200 group-hover:scale-105 transition-transform duration-300">
-                      <img :src="user?.foto_url || '/images/default-user.png'" alt="Profile Photo" class="w-full h-full object-cover">
+                   <div class="w-32 h-32 rounded-xl overflow-hidden ring-4 ring-white shadow-lg bg-slate-200 group-hover:scale-105 transition-transform duration-300 flex items-center justify-center">
+                      <img v-if="profilePhotoUrl" :src="profilePhotoUrl" alt="Profile Photo" class="w-full h-full object-cover" @error="photoError = true">
+                      <span v-else class="w-full h-full flex items-center justify-center text-3xl font-bold text-slate-400 bg-slate-100">{{ formattedName?.charAt(0) || '?' }}</span>
                    </div>
-                   <button class="absolute bottom-0 right-0 bg-indigo-600 text-white p-2 rounded-full text-xs shadow-lg hover:bg-indigo-700 transition transform hover:scale-105" title="Ganti Foto">
+                   <button @click="triggerFileInput" class="absolute bottom-0 right-0 bg-indigo-600 text-white p-2 rounded-full text-xs shadow-lg hover:bg-indigo-700 transition transform hover:scale-105 cursor-pointer" title="Ganti Foto">
                       <i class="fas fa-camera"></i>
                    </button>
+                   <input 
+                      type="file" 
+                      ref="fileInput" 
+                      class="hidden" 
+                      accept="image/*"
+                      @change="handleFileUpload"
+                   >
                 </div>
                 
                 <div class="flex-1 text-center md:text-left">
@@ -110,6 +118,63 @@ const route = useRoute()
 const router = useRouter()
 const authStore = useAuthStore()
 
+const fileInput = ref(null)
+
+const triggerFileInput = () => {
+    fileInput.value.click()
+}
+
+const uploading = ref(false)
+
+const handleFileUpload = async (event) => {
+    const file = event.target.files[0]
+    if (!file) return
+
+    // Validasi ukuran (max 2MB)
+    if (file.size > 2 * 1024 * 1024) {
+        alert('Ukuran file maksimal 2MB')
+        return
+    }
+
+    const formData = new FormData()
+    formData.append('foto', file)
+
+    try {
+        uploading.value = true
+        const res = await api.post(`/pegawai/profile/umum/${profileId.value}/photo`, formData, {
+            headers: {
+                'Content-Type': 'multipart/form-data'
+            }
+        })
+        
+        if (res.data.success) {
+            const newFotoUrl = res.data.data.foto_url
+            photoError.value = false
+            // Update local header data
+            if (headerData.value) {
+                headerData.value.foto_url = newFotoUrl
+            }
+            // Update auth store user so Navbar also gets updated
+            if (authStore.user) {
+                authStore.user.foto_url = newFotoUrl
+            }
+            // Persist to localStorage so it survives page refresh
+            const storedUser = JSON.parse(localStorage.getItem('user') || '{}')
+            storedUser.foto_url = newFotoUrl
+            localStorage.setItem('user', JSON.stringify(storedUser))
+            
+            alert('Foto profil berhasil diperbarui')
+        }
+    } catch (e) {
+        console.error('Upload failed', e)
+        alert('Gagal mengunggah foto')
+    } finally {
+        uploading.value = false
+        // Reset input
+        event.target.value = ''
+    }
+}
+
 const loading = ref(false)
 const user = computed(() => authStore.user)
 const profileId = computed(() => authStore.user?.profile_id)
@@ -118,6 +183,12 @@ const activeMainTab = ref('umum')
 // Header Data State
 const headerData = ref(null)
 const pekerjaanData = ref(null)
+const photoError = ref(false)
+
+const profilePhotoUrl = computed(() => {
+    if (photoError.value) return null
+    return headerData.value?.foto_url || user.value?.foto_url || null
+})
 
 const formattedName = computed(() => {
     const d = headerData.value
