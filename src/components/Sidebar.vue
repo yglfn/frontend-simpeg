@@ -175,6 +175,7 @@
             </router-link>
           </li>
 
+
           <li class="menu-item" :class="{ active: $route.query.tab === 'keamanan' }">
             <router-link 
               to="/pegawai/profile?tab=keamanan" 

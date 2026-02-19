@@ -54,15 +54,15 @@
                             <!-- Metadata Grid -->
                             <div class="flex flex-wrap gap-x-6 gap-y-2 text-xs text-slate-500">
                                 <div class="flex items-center gap-1.5">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="16"></line><line x1="8" y1="12" x2="16" y2="12"></line></svg>
+                                    <i class="fas fa-venus-mars text-slate-400"></i>
                                     <span>{{ k.jenis_kelamin === 'L' ? 'Laki-laki' : 'Perempuan' }}</span>
                                 </div>
                                 <div class="flex items-center gap-1.5">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400"><rect x="3" y="4" width="18" height="18" rx="2" ry="2"></rect><line x1="16" y1="2" x2="16" y2="6"></line><line x1="8" y1="2" x2="8" y2="6"></line><line x1="3" y1="10" x2="21" y2="10"></line></svg>
+                                    <i class="fas fa-calendar-alt text-slate-400"></i>
                                     <span>{{ k.tempat_lahir ? `${k.tempat_lahir}, ` : '' }}{{ formatDate(k.tanggal_lahir) }}</span>
                                 </div>
                                 <div v-if="k.keterangan" class="flex items-center gap-1.5">
-                                    <svg xmlns="http://www.w3.org/2000/svg" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-slate-400"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path><polyline points="14 2 14 8 20 8"></polyline><line x1="16" y1="13" x2="8" y2="13"></line><line x1="16" y1="17" x2="8" y2="17"></line><polyline points="10 9 9 9 8 9"></polyline></svg>
+                                    <i class="fas fa-info-circle text-slate-400"></i>
                                     <span class="italic truncate max-w-[200px]">{{ k.keterangan }}</span>
                                 </div>
                             </div>
@@ -72,10 +72,13 @@
                     <!-- Action Buttons -->
                     <div class="absolute top-4 right-4 opacity-0 group-hover:opacity-100 transition-all flex gap-3">
                         <button @click="openModal(k)" class="text-xs font-semibold text-blue-600 hover:text-blue-700 hover:underline flex items-center gap-1" title="Edit">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"></path><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"></path></svg>
+                            <i class="fas fa-edit"></i>
                             Edit
                         </button>
-                        <!-- Delete button removed as requested -->
+                        <button @click="confirmDelete(k)" class="text-xs font-semibold text-red-400 hover:text-red-600 hover:underline flex items-center gap-1" title="Hapus">
+                            <i class="fas fa-trash-alt"></i>
+                            Hapus
+                        </button>
                     </div>
                 </div>
             </div>
@@ -86,7 +89,33 @@
             </div>
         </div>
 
-        <!-- Modal Form -->
+        <!-- Modal Delete Keluarga -->
+        <Teleport to="body">
+            <div v-if="showDeleteModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4">
+                <div class="absolute inset-0 bg-black/40 backdrop-blur-sm" @click="showDeleteModal = false"></div>
+                <div class="relative bg-white rounded-2xl shadow-2xl w-full max-w-sm p-6">
+                    <div class="flex items-center gap-3 mb-4">
+                        <div class="w-10 h-10 rounded-full bg-red-100 flex items-center justify-center shrink-0">
+                            <i class="fas fa-trash-alt text-red-500"></i>
+                        </div>
+                        <div>
+                            <h3 class="font-bold text-slate-800">Hapus Data Keluarga</h3>
+                            <p class="text-sm text-slate-500 mt-0.5">Tindakan ini tidak dapat dibatalkan.</p>
+                        </div>
+                    </div>
+                    <p class="text-sm text-slate-600 mb-5">Yakin ingin menghapus data <span class="font-semibold">{{ deleteTarget?.nama }}</span>?</p>
+                    <div class="flex gap-3 justify-end">
+                        <button @click="showDeleteModal = false" class="px-4 py-2 text-sm font-medium text-slate-600 hover:bg-slate-100 rounded-lg transition">Batal</button>
+                        <button @click="executeDelete" :disabled="isDeleting" class="px-4 py-2 bg-red-500 hover:bg-red-600 text-white text-sm font-semibold rounded-lg transition disabled:opacity-50 flex items-center gap-2">
+                            <span v-if="isDeleting" class="animate-spin rounded-full h-3.5 w-3.5 border-2 border-white border-t-transparent"></span>
+                            {{ isDeleting ? 'Menghapus...' : 'Hapus' }}
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </Teleport>
+
+        <!-- Modal Form Keluarga -->
         <Teleport to="body">
             <div v-if="showModal" class="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/50 backdrop-blur-sm" @click.self="closeModal">
                 <div class="bg-white rounded-xl shadow-2xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
@@ -221,11 +250,10 @@
 </template>
 
 <script setup>
-import { ref, watch, reactive } from 'vue'
+import { ref, watch, reactive, onMounted } from 'vue'
 import api from '@/services/api'
 import { formatDate } from '@/utils/format'
 import { useToast } from '@/composables/useToast'
-import Swal from 'sweetalert2'
 
 const props = defineProps({
     profileId: {
@@ -241,6 +269,7 @@ const showModal = ref(false)
 const isEditing = ref(false)
 const isSaving = ref(false)
 const editingId = ref(null)
+
 
 const form = reactive({
     nama: '',
@@ -266,6 +295,8 @@ const getInitials = (name) => {
     return name.split(' ').map(n => n[0]).slice(0, 2).join('').toUpperCase()
 }
 
+
+
 const resetForm = () => {
     Object.keys(form).forEach(key => {
         form[key] = ''
@@ -281,7 +312,6 @@ const openModal = (data = null) => {
     if (data) {
         isEditing.value = true
         editingId.value = data.id
-        // Copy data to form
         Object.keys(form).forEach(key => {
             if (data[key] !== undefined && data[key] !== null) {
                 form[key] = data[key]
@@ -348,6 +378,34 @@ const saveData = async () => {
     }
 }
 
+// Delete
+const showDeleteModal = ref(false)
+const deleteTarget = ref(null)
+const isDeleting = ref(false)
+
+const confirmDelete = (item) => {
+    deleteTarget.value = item
+    showDeleteModal.value = true
+}
+
+const executeDelete = async () => {
+    if (!deleteTarget.value) return
+    isDeleting.value = true
+    try {
+        await api.delete(`/pegawai/profile/keluarga/${props.profileId}/${deleteTarget.value.id}`)
+        showToast('Data keluarga berhasil dihapus.')
+        showDeleteModal.value = false
+        deleteTarget.value = null
+        loadData()
+    } catch (e) {
+        const msg = e.response?.data?.message || 'Gagal menghapus data.'
+        showToast(msg, 'error')
+    } finally {
+        isDeleting.value = false
+    }
+}
+
+// Init
 watch(() => props.profileId, (newId) => {
     if (newId) loadData()
 }, { immediate: true })

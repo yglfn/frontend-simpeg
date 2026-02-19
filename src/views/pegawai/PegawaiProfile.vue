@@ -38,7 +38,7 @@
                      </span>
                   </div>
                   <div class="space-y-1 text-slate-500 text-sm">
-                     <p class="flex items-center gap-2 justify-center md:justify-start"><i class="fas fa-id-badge text-indigo-400"></i> NIP: <span class="font-mono font-medium text-slate-700">{{ headerData?.nip || user?.nip || '-' }}</span></p>
+                     <p class="flex items-center gap-2 justify-center md:justify-start"><i class="fas fa-id-badge text-indigo-400"></i> NIP / Nomor Identitas : <span class="font-mono font-medium text-slate-700">{{ headerData?.nip || user?.nip || '-' }}</span></p>
                      <p class="flex items-center gap-2 justify-center md:justify-start"><i class="fas fa-envelope text-indigo-400"></i> {{ user?.email || '-' }}</p>
                   </div>
                 </div>
@@ -228,8 +228,8 @@ const currentTabInfo = computed(() => {
      // 'pekerjaan' tab removed as it is now in header
      case 'riwayat-jabatan': return { label: 'Riwayat Jabatan', description: 'Rekam jejak jabatan pegawai.' }
      case 'pendidikan': return { label: 'Riwayat Pendidikan', description: 'Data pendidikan formal.' }
-     case 'keluarga': return { label: 'Data Keluarga', description: 'Daftar anggota keluarga.' }
-     case 'keamanan': return { label: 'Keamanan Akun', description: 'Pengaturan password.' }
+      case 'keluarga': return { label: 'Data Keluarga', description: 'Daftar anggota keluarga.' }
+      case 'keamanan': return { label: 'Keamanan Akun', description: 'Pengaturan password.' }
      default: return { label: '', description: '' }
    }
 })

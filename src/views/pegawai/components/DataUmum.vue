@@ -19,6 +19,8 @@
                <div><span class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Agama</span><span class="text-sm font-semibold text-slate-700">{{ data?.agama?.nama || '-' }}</span></div>
                <div><span class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Status Pernikahan</span><span class="text-sm font-semibold text-slate-700">{{ data?.status_kawin?.nama || '-' }}</span></div>
                <div><span class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Golongan Darah</span><span class="text-sm font-semibold text-slate-700">{{ data?.golongan_darah?.nama || '-' }}</span></div>
+               <div><span class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Telepon / WhatsApp</span><span class="text-sm font-semibold text-slate-700">{{ data?.telepon || '-' }}</span></div>
+               <div><span class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Kode Pos</span><span class="text-sm font-semibold text-slate-700">{{ data?.kode_pos || '-' }}</span></div>
             </div>
 
             <!-- Edit Mode -->
@@ -62,6 +64,19 @@
                   </select>
                 </div>
               </div>
+              <!-- Kontak -->
+              <div class="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-slate-100 pt-4">
+                <div>
+                  <label class="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Telepon / WhatsApp</label>
+                  <input v-model="form.telepon" type="text" placeholder="08xxxxxxxxxx"
+                      class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-shadow" />
+                </div>
+                <div>
+                  <label class="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Kode Pos</label>
+                  <input v-model="form.kode_pos" type="text" placeholder="12345" maxlength="10"
+                      class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-shadow" />
+                </div>
+              </div>
               <div class="flex gap-3 pt-4 border-t border-slate-100 mt-4">
                 <button @click="save" :disabled="saving" class="bg-indigo-600 hover:bg-indigo-700 text-white px-5 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2">
                   {{ saving ? 'Menyimpan...' : 'Simpan Perubahan' }}
@@ -96,7 +111,10 @@ const form = reactive({
     agama_id: null,
     status_kawin_id: null,
     golongan_darah_id: null,
-    tanggal_lahir: ''
+    tanggal_lahir: '',
+    email: '',
+    telepon: '',
+    kode_pos: ''
 })
 
 const refAgama = ref([])
@@ -148,6 +166,9 @@ watch(editMode, (val) => {
         form.golongan_darah_id = data.value.golongan_darah?.id
         // Ensure format YYYY-MM-DD for input type="date"
         form.tanggal_lahir = data.value.tanggal_lahir ? new Date(data.value.tanggal_lahir).toISOString().split('T')[0] : ''
+        form.email = data.value.email || ''
+        form.telepon = data.value.telepon || ''
+        form.kode_pos = data.value.kode_pos || ''
     }
 })
 

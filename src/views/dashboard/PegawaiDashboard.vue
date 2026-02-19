@@ -67,7 +67,7 @@
             <h3 class="text-xl font-bold text-slate-800">
               {{ profileData.gelar_depan_1 }} {{ profileData.gelar_depan_2 }} {{ profileData.nama_lengkap || '-' }}{{ profileData.gelar_belakang ? ', ' + profileData.gelar_belakang : '' }}
             </h3>
-            <p class="text-slate-500 mt-1">NIP: {{ profileData.nip || '-' }}</p>
+            <p class="text-slate-500 mt-1">NIP / Nomor Identitas : {{ profileData.nip || '-' }}</p>
             <div class="flex flex-wrap gap-2 mt-3 justify-center md:justify-start">
               <span v-if="pekerjaanData.jabatan" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
                 <i class="fas fa-briefcase"></i> {{ pekerjaanData.jabatan.nama }}
