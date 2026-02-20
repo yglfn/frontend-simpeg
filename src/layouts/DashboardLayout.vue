@@ -7,10 +7,9 @@
       <!-- New Sidebar Component -->
       <Sidebar :collapsed="sidebarCollapsed" @toggle-collapse="toggleSidebar" />
 
-      <!-- Main Content -->
       <div 
         class="flex-1 flex flex-col min-w-0 overflow-hidden transition-all duration-300"
-        :class="{ 'ml-[70px]': sidebarCollapsed, 'ml-[250px]': !sidebarCollapsed }"
+        :class="sidebarCollapsed ? 'ml-[70px]' : 'ml-[70px] md:ml-[250px]'"
       >
         <!-- Page Content -->
         <main class="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
@@ -22,13 +21,29 @@
 </template>
 
 <script setup>
-import { ref } from 'vue';
+import { ref, onMounted, onUnmounted } from 'vue';
 import Navbar from '@/components/Navbar.vue';
 import Sidebar from '@/components/Sidebar.vue';
 
-const sidebarCollapsed = ref(false);
+const sidebarCollapsed = ref(window.innerWidth <= 768);
 
 const toggleSidebar = (state) => {
   sidebarCollapsed.value = state;
 };
+
+const checkScreenSize = () => {
+  if (window.innerWidth <= 768) {
+    sidebarCollapsed.value = true;
+  } else {
+    sidebarCollapsed.value = false;
+  }
+};
+
+onMounted(() => {
+  window.addEventListener('resize', checkScreenSize);
+});
+
+onUnmounted(() => {
+  window.removeEventListener('resize', checkScreenSize);
+});
 </script>

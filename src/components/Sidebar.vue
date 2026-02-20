@@ -187,6 +187,24 @@
               <span v-if="!isCollapsed">Keamanan</span>
             </router-link>
           </li>
+
+          <!-- DOKUMEN MENU (NEW) -->
+          <template v-if="!isCollapsed">
+            <li class="menu-section">
+              <span class="section-label">BERKAS SAYA</span>
+            </li>
+          </template>
+          <li class="menu-item" :class="{ active: isActiveRoute('/pegawai/dokumen') }">
+            <router-link 
+              to="/pegawai/dokumen" 
+              class="menu-link"
+              @click="handleMenuClick('dokumen')"
+              :title="isCollapsed ? 'Dokumen' : ''"
+            >
+              <i class="fas fa-folder-open"></i>
+              <span v-if="!isCollapsed">Dokumen</span>
+            </router-link>
+          </li>
         </template>
       </ul>
     </nav>
@@ -292,10 +310,10 @@ defineExpose({
   width: 250px;
   background: #ffffff;
   color: #1e293b; /* Slate-800 */
-  height: 100vh;
+  height: calc(100vh - 90px);
   position: fixed;
   left: 0;
-  top: 0;
+  top: 90px;
   z-index: 1000;
   transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
   display: flex;
@@ -303,7 +321,6 @@ defineExpose({
   overflow-y: auto;
   overflow-x: hidden;
   border-right: 1px solid #e2e8f0; /* Slate-200 */
-  margin-top: 90px;
   box-shadow: 2px 0 10px rgba(0, 0, 0, 0.05);
 }
 
@@ -491,11 +508,12 @@ defineExpose({
 
 /* Sidebar Footer */
 .sidebar-footer {
-  padding: 20px 15px;
+  padding: 12px 10px;
   border-top: 1px solid #f1f5f9;
-  font-size: 0.8rem;
+  font-size: 0.75rem;
   color: #64748b;
   background: #ffffff;
+  flex-shrink: 0;
 }
 
 .system-info {
@@ -531,12 +549,12 @@ defineExpose({
 
 .debug-info {
   text-align: center;
-  margin-top: 15px;
-  padding-top: 15px;
+  margin-top: 8px;
+  padding-top: 8px;
   border-top: 1px solid #f1f5f9;
   color: #94a3b8;
   font-family: 'Courier New', monospace;
-  font-size: 0.7rem;
+  font-size: 0.65rem;
 }
 
 .sidebar-footer-collapsed {

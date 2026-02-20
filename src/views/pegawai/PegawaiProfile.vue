@@ -39,7 +39,6 @@
                   </div>
                   <div class="space-y-1 text-slate-500 text-sm">
                      <p class="flex items-center gap-2 justify-center md:justify-start"><i class="fas fa-id-badge text-indigo-400"></i> NIP / Nomor Identitas : <span class="font-mono font-medium text-slate-700">{{ headerData?.nip || user?.nip || '-' }}</span></p>
-                     <p class="flex items-center gap-2 justify-center md:justify-start"><i class="fas fa-envelope text-indigo-400"></i> {{ user?.email || '-' }}</p>
                   </div>
                 </div>
             </div>

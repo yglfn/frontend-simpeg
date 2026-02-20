@@ -19,6 +19,7 @@
                <div><span class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Agama</span><span class="text-sm font-semibold text-slate-700">{{ data?.agama?.nama || '-' }}</span></div>
                <div><span class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Status Pernikahan</span><span class="text-sm font-semibold text-slate-700">{{ data?.status_kawin?.nama || '-' }}</span></div>
                <div><span class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Golongan Darah</span><span class="text-sm font-semibold text-slate-700">{{ data?.golongan_darah?.nama || '-' }}</span></div>
+               <div><span class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Email</span><span class="text-sm font-semibold text-slate-700">{{ data?.email || '-' }}</span></div>
                <div><span class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Telepon / WhatsApp</span><span class="text-sm font-semibold text-slate-700">{{ data?.telepon || '-' }}</span></div>
                <div><span class="block text-xs font-medium text-slate-400 uppercase tracking-wider mb-1">Kode Pos</span><span class="text-sm font-semibold text-slate-700">{{ data?.kode_pos || '-' }}</span></div>
             </div>
@@ -66,6 +67,11 @@
               </div>
               <!-- Kontak -->
               <div class="grid grid-cols-1 md:grid-cols-2 gap-6 border-t border-slate-100 pt-4">
+                <div class="md:col-span-2">
+                  <label class="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Email</label>
+                  <input v-model="form.email" type="email" placeholder="email@example.com"
+                      class="w-full border border-slate-300 rounded-lg px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 outline-none transition-shadow" />
+                </div>
                 <div>
                   <label class="block text-xs font-semibold text-slate-500 mb-1.5 uppercase tracking-wide">Telepon / WhatsApp</label>
                   <input v-model="form.telepon" type="text" placeholder="08xxxxxxxxxx"
@@ -185,7 +191,14 @@ const save = async () => {
         editMode.value = false
     } catch (e) {
         console.error('Error saving Data Umum', e)
-        showToast('Gagal menyimpan data umum', 'error')
+        if (e.response?.data?.errors) {
+            // Get the first parsing error
+            const errors = e.response.data.errors;
+            const firstErrorField = Object.keys(errors)[0];
+            showToast(errors[firstErrorField][0], 'error');
+        } else {
+            showToast(e.response?.data?.message || 'Gagal menyimpan data umum', 'error')
+        }
     } finally {
         saving.value = false
     }

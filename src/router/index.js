@@ -78,6 +78,12 @@ const router = createRouter({
                     component: () => import('@/views/pegawai/PegawaiProfile.vue'),
                     meta: { requiresAuth: true }
                 },
+                {
+                    path: 'pegawai/dokumen',
+                    name: 'pegawai-dokumen',
+                    component: () => import('@/views/pegawai/Dokumen.vue'),
+                    meta: { requiresAuth: true }
+                },
             ]
         },
         {

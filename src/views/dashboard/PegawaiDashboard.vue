@@ -55,209 +55,110 @@
     <!-- Content -->
     <div v-if="(!isLoading && !errorMessage) || hasData" class="dashboard-content">
 
-      <!-- Profile Card -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 mb-6">
-        <div class="flex flex-col md:flex-row items-center md:items-start gap-6">
-          <!-- Avatar -->
-          <div class="w-20 h-20 rounded-full bg-gradient-to-br from-teal-400 to-teal-600 flex items-center justify-center text-white text-3xl font-bold shadow-lg shrink-0">
-            {{ (profileData.nama_lengkap || 'P').charAt(0).toUpperCase() }}
-          </div>
-          <!-- Info -->
-          <div class="flex-1 text-center md:text-left">
-            <h3 class="text-xl font-bold text-slate-800">
-              {{ profileData.gelar_depan_1 }} {{ profileData.gelar_depan_2 }} {{ profileData.nama_lengkap || '-' }}{{ profileData.gelar_belakang ? ', ' + profileData.gelar_belakang : '' }}
+      <!-- Top Row: Overview Cards -->
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-6">
+        
+        <!-- Profile Completion Card -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex items-center justify-between group hover:shadow-md transition-shadow cursor-pointer" @click="goTo('/pegawai/profile?tab=umum')">
+          <div>
+            <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-1">Kelengkapan Profil</p>
+            <h3 class="text-3xl font-bold flex items-baseline gap-1" :class="profileCompletion >= 80 ? 'text-teal-600' : (profileCompletion >= 50 ? 'text-amber-500' : 'text-red-500')">
+              {{ profileCompletion }}<span class="text-xl">%</span>
             </h3>
-            <p class="text-slate-500 mt-1">NIP / Nomor Identitas : {{ profileData.nip || '-' }}</p>
-            <div class="flex flex-wrap gap-2 mt-3 justify-center md:justify-start">
-              <span v-if="pekerjaanData.jabatan" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-blue-50 text-blue-700 border border-blue-100">
-                <i class="fas fa-briefcase"></i> {{ pekerjaanData.jabatan.nama }}
-              </span>
-              <span v-if="pekerjaanData.unit_kerja" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-emerald-50 text-emerald-700 border border-emerald-100">
-                <i class="fas fa-building"></i> {{ pekerjaanData.unit_kerja.nama }}
-              </span>
-              <span v-if="pekerjaanData.golongan" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-violet-50 text-violet-700 border border-violet-100">
-                <i class="fas fa-layer-group"></i> {{ pekerjaanData.golongan.nama }}
-              </span>
-              <span v-if="pekerjaanData.status_kepegawaian" class="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-xs font-medium bg-amber-50 text-amber-700 border border-amber-100">
-                <i class="fas fa-id-card"></i> {{ pekerjaanData.status_kepegawaian.nama }}
-              </span>
-            </div>
+            <p class="text-xs mt-2" :class="profileCompletion >= 80 ? 'text-teal-500' : 'text-amber-500'">
+              <i class="fas" :class="profileCompletion >= 80 ? 'fa-check-circle' : 'fa-exclamation-circle'"></i>
+              {{ profileCompletion >= 80 ? 'Profil sudah cukup lengkap' : 'Lengkapi profil Anda' }}
+            </p>
           </div>
-          <!-- Edit Profile Button -->
-          <router-link 
-            to="/pegawai/profile" 
-            class="bg-slate-100 hover:bg-slate-200 text-slate-700 px-4 py-2 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 shrink-0"
-          >
-            <i class="fas fa-pen"></i> Edit Profil
-          </router-link>
+          <div class="w-16 h-16 rounded-full flex items-center justify-center shrink-0 border-4" :class="profileCompletion >= 80 ? 'bg-teal-50 border-teal-100 text-teal-600' : (profileCompletion >= 50 ? 'bg-amber-50 border-amber-100 text-amber-500' : 'bg-red-50 border-red-100 text-red-500')">
+            <i class="fas fa-chart-pie text-2xl group-hover:scale-110 transition-transform"></i>
+          </div>
         </div>
+
+        <!-- Masa Kerja Card -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex items-center justify-between group hover:shadow-md transition-shadow">
+          <div>
+            <p class="text-sm font-semibold text-slate-500 uppercase tracking-wide mb-1">Total Masa Kerja</p>
+            <h3 class="text-3xl font-bold text-indigo-600 flex items-baseline gap-1">
+              {{ masaKerja.tahun }}<span class="text-base text-slate-600 font-medium">Thn</span> {{ masaKerja.bulan }}<span class="text-base text-slate-600 font-medium">Bln</span>
+            </h3>
+            <p class="text-xs mt-2 text-slate-400">
+              <i class="fas fa-calendar-alt"></i> Dihitung dari TMT
+            </p>
+          </div>
+          <div class="w-16 h-16 rounded-full bg-indigo-50 border-4 border-indigo-100 text-indigo-600 flex items-center justify-center shrink-0">
+            <i class="fas fa-briefcase text-2xl group-hover:scale-110 transition-transform"></i>
+          </div>
+        </div>
+
+        <!-- Quick Stats Grid -->
+        <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-4 grid grid-cols-2 gap-4">
+           <div class="text-center p-2 rounded-lg bg-blue-50 cursor-pointer hover:bg-blue-100 transition-colors" @click="goTo('/pegawai/profile?tab=pendidikan')">
+             <div class="text-blue-600 mb-1"><i class="fas fa-graduation-cap"></i></div>
+             <div class="text-xl font-bold text-slate-800">{{ counts.pendidikan }}</div>
+             <div class="text-xs text-slate-500">Pendidikan</div>
+           </div>
+           <div class="text-center p-2 rounded-lg bg-pink-50 cursor-pointer hover:bg-pink-100 transition-colors" @click="goTo('/pegawai/profile?tab=keluarga')">
+             <div class="text-pink-600 mb-1"><i class="fas fa-users"></i></div>
+             <div class="text-xl font-bold text-slate-800">{{ counts.keluarga }}</div>
+             <div class="text-xs text-slate-500">Keluarga</div>
+           </div>
+           <div class="text-center p-2 rounded-lg bg-violet-50 col-span-2 flex items-center justify-between px-4 cursor-pointer hover:bg-violet-100 transition-colors" @click="goTo('/pegawai/profile?tab=riwayat-jabatan')">
+             <div class="flex items-center gap-2">
+               <div class="text-violet-600"><i class="fas fa-history"></i></div>
+               <div class="text-xs font-semibold text-slate-600">Riwayat Jabatan</div>
+             </div>
+             <div class="text-lg font-bold text-slate-800">{{ counts.riwayatJabatan }}</div>
+           </div>
+        </div>
+
       </div>
 
-      <!-- Summary Cards -->
-      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
-        <div 
-          class="bg-white rounded-xl p-5 shadow-sm border border-slate-100 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-md group"
-          @click="goTo('/pegawai/profile?tab=pendidikan')"
-        >
-          <div class="flex items-center justify-between mb-3">
-            <div class="w-10 h-10 rounded-xl bg-blue-100 text-blue-600 flex items-center justify-center text-lg group-hover:bg-blue-600 group-hover:text-white transition-colors">
-              <i class="fas fa-graduation-cap"></i>
+      <!-- Detail Kepegawaian Saat Ini & Riwayat -->
+      <div class="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-6">
+        
+        <!-- Status Kepegawaian Saat Ini -->
+        <div class="lg:col-span-1 bg-white rounded-xl shadow-sm border border-slate-100 p-0 overflow-hidden flex flex-col">
+          <div class="bg-gradient-to-r from-teal-500 to-emerald-500 p-5 text-white">
+            <div class="flex items-center gap-3 mb-1">
+              <div class="bg-white/20 w-10 h-10 rounded-full flex items-center justify-center backdrop-blur-sm">
+                <i class="fas fa-id-card text-lg"></i>
+              </div>
+              <h3 class="text-lg font-bold">Status Kepegawaian</h3>
             </div>
+            <p class="text-teal-50 text-sm ml-13">Posisi saat ini</p>
           </div>
-          <h3 class="text-2xl font-bold text-slate-800">{{ counts.pendidikan }}</h3>
-          <p class="text-slate-500 text-xs mt-1">Riwayat Pendidikan</p>
-        </div>
-
-        <div 
-          class="bg-white rounded-xl p-5 shadow-sm border border-slate-100 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-md group"
-          @click="goTo('/pegawai/profile?tab=riwayat-jabatan')"
-        >
-          <div class="flex items-center justify-between mb-3">
-            <div class="w-10 h-10 rounded-xl bg-violet-100 text-violet-600 flex items-center justify-center text-lg group-hover:bg-violet-600 group-hover:text-white transition-colors">
-              <i class="fas fa-sitemap"></i>
-            </div>
-          </div>
-          <h3 class="text-2xl font-bold text-slate-800">{{ counts.riwayatJabatan }}</h3>
-          <p class="text-slate-500 text-xs mt-1">Riwayat Jabatan</p>
-        </div>
-
-        <div 
-          class="bg-white rounded-xl p-5 shadow-sm border border-slate-100 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-md group"
-          @click="goTo('/pegawai/profile?tab=keluarga')"
-        >
-          <div class="flex items-center justify-between mb-3">
-            <div class="w-10 h-10 rounded-xl bg-pink-100 text-pink-600 flex items-center justify-center text-lg group-hover:bg-pink-600 group-hover:text-white transition-colors">
-              <i class="fas fa-users"></i>
-            </div>
-          </div>
-          <h3 class="text-2xl font-bold text-slate-800">{{ counts.keluarga }}</h3>
-          <p class="text-slate-500 text-xs mt-1">Data Keluarga</p>
-        </div>
-
-        <div 
-          class="bg-white rounded-xl p-5 shadow-sm border border-slate-100 cursor-pointer transition-all hover:-translate-y-1 hover:shadow-md group"
-          @click="goTo('/pegawai/profile?tab=umum')"
-        >
-          <div class="flex items-center justify-between mb-3">
-            <div class="w-10 h-10 rounded-xl bg-teal-100 text-teal-600 flex items-center justify-center text-lg group-hover:bg-teal-600 group-hover:text-white transition-colors">
-              <i class="fas fa-user-circle"></i>
-            </div>
-          </div>
-          <h3 class="text-2xl font-bold text-slate-800">
-            <i class="fas fa-check-circle text-green-500 text-lg"></i>
-          </h3>
-          <p class="text-slate-500 text-xs mt-1">Profil Lengkap</p>
-        </div>
-      </div>
-
-      <!-- Two Column: Personal Info & Quick Actions -->
-      <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
-        <!-- Personal Info -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
-          <div class="flex items-center gap-3 mb-5">
-            <div class="w-8 h-8 rounded-lg bg-teal-100 text-teal-600 flex items-center justify-center">
-              <i class="fas fa-info-circle"></i>
-            </div>
-            <h3 class="text-base font-bold text-slate-800">Informasi Pribadi</h3>
-          </div>
-          <div class="space-y-3">
-            <div class="flex justify-between py-2 border-b border-slate-50">
-              <span class="text-sm text-slate-500">Tempat, Tgl Lahir</span>
-              <span class="text-sm font-medium text-slate-800">{{ profileData.tempat_lahir || '-' }}, {{ formatDate(profileData.tanggal_lahir) }}</span>
-            </div>
-            <div class="flex justify-between py-2 border-b border-slate-50">
-              <span class="text-sm text-slate-500">Jenis Kelamin</span>
-              <span class="text-sm font-medium text-slate-800">{{ profileData.jenis_kelamin === 'L' ? 'Laki-laki' : profileData.jenis_kelamin === 'P' ? 'Perempuan' : '-' }}</span>
-            </div>
-            <div class="flex justify-between py-2 border-b border-slate-50">
-              <span class="text-sm text-slate-500">Agama</span>
-              <span class="text-sm font-medium text-slate-800">{{ profileData.agama?.nama || '-' }}</span>
-            </div>
-            <div class="flex justify-between py-2 border-b border-slate-50">
-              <span class="text-sm text-slate-500">Status Kawin</span>
-              <span class="text-sm font-medium text-slate-800">{{ profileData.status_kawin?.nama || '-' }}</span>
-            </div>
-            <div class="flex justify-between py-2">
-              <span class="text-sm text-slate-500">Pangkat</span>
-              <span class="text-sm font-medium text-slate-800">{{ pekerjaanData.pangkat?.nama || '-' }}</span>
-            </div>
-          </div>
-        </div>
-
-        <!-- Quick Actions -->
-        <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
-          <div class="flex items-center gap-3 mb-5">
-            <div class="w-8 h-8 rounded-lg bg-indigo-100 text-indigo-600 flex items-center justify-center">
-              <i class="fas fa-bolt"></i>
+          <div class="p-6 flex-1 flex flex-col gap-5">
+            <div>
+              <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Jabatan Aktif</span>
+              <p class="text-base font-bold text-slate-800">{{ currentJabatan?.jabatan?.nama_jabatan || pekerjaanData.jabatan?.nama || '-' }}</p>
             </div>
             <div>
-              <h3 class="text-base font-bold text-slate-800">Aksi Cepat</h3>
-              <p class="text-slate-400 text-xs">Kelola data kepegawaian Anda</p>
+              <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Unit Kerja</span>
+              <p class="text-sm font-medium text-slate-700">{{ currentJabatan?.unit_kerja?.nama_unit || pekerjaanData.unit_kerja?.nama || '-' }}</p>
+            </div>
+             <div class="grid grid-cols-2 gap-4">
+                <div>
+                  <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Golongan</span>
+                  <p class="text-sm font-medium text-slate-700">{{ pekerjaanData.golongan?.nama || '-' }}</p>
+                </div>
+                <div>
+                  <span class="block text-xs font-semibold text-slate-400 uppercase tracking-wider mb-1">Status</span>
+                  <span class="inline-flex mt-1 px-2.5 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                    {{ pekerjaanData.status_kepegawaian?.nama || 'Aktif' }}
+                  </span>
+                </div>
             </div>
           </div>
-
-          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
-            <div 
-              class="bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl p-4 cursor-pointer transition-colors flex items-center gap-3"
-              @click="goTo('/pegawai/profile?tab=umum')"
-            >
-              <div class="w-9 h-9 rounded-full bg-teal-100 text-teal-600 flex items-center justify-center shrink-0">
-                <i class="fas fa-user"></i>
-              </div>
-              <div>
-                <h4 class="font-semibold text-slate-700 text-sm">Data Umum</h4>
-                <p class="text-slate-500 text-xs">Lihat & edit profil</p>
-              </div>
-              <i class="fas fa-chevron-right ml-auto text-slate-300 text-xs"></i>
-            </div>
-
-            <div 
-              class="bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl p-4 cursor-pointer transition-colors flex items-center gap-3"
-              @click="goTo('/pegawai/profile?tab=alamat')"
-            >
-              <div class="w-9 h-9 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center shrink-0">
-                <i class="fas fa-map-marker-alt"></i>
-              </div>
-              <div>
-                <h4 class="font-semibold text-slate-700 text-sm">Alamat</h4>
-                <p class="text-slate-500 text-xs">Update alamat</p>
-              </div>
-              <i class="fas fa-chevron-right ml-auto text-slate-300 text-xs"></i>
-            </div>
-
-            <div 
-              class="bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl p-4 cursor-pointer transition-colors flex items-center gap-3"
-              @click="goTo('/pegawai/profile?tab=pendidikan')"
-            >
-              <div class="w-9 h-9 rounded-full bg-amber-100 text-amber-600 flex items-center justify-center shrink-0">
-                <i class="fas fa-graduation-cap"></i>
-              </div>
-              <div>
-                <h4 class="font-semibold text-slate-700 text-sm">Pendidikan</h4>
-                <p class="text-slate-500 text-xs">Riwayat pendidikan</p>
-              </div>
-              <i class="fas fa-chevron-right ml-auto text-slate-300 text-xs"></i>
-            </div>
-
-            <div 
-              class="bg-slate-50 hover:bg-slate-100 border border-slate-200 rounded-xl p-4 cursor-pointer transition-colors flex items-center gap-3"
-              @click="goTo('/pegawai/profile?tab=keluarga')"
-            >
-              <div class="w-9 h-9 rounded-full bg-pink-100 text-pink-600 flex items-center justify-center shrink-0">
-                <i class="fas fa-users"></i>
-              </div>
-              <div>
-                <h4 class="font-semibold text-slate-700 text-sm">Keluarga</h4>
-                <p class="text-slate-500 text-xs">Data anggota keluarga</p>
-              </div>
-              <i class="fas fa-chevron-right ml-auto text-slate-300 text-xs"></i>
-            </div>
+          <div class="bg-slate-50 p-4 border-t border-slate-100">
+             <button @click="goTo('/pegawai/profile')" class="w-full py-2 text-sm text-center font-medium text-teal-600 hover:text-teal-700 transition-colors">
+               Lihat Profil Lengkap <i class="fas fa-arrow-right ml-1 text-xs"></i>
+             </button>
           </div>
         </div>
-      </div>
 
-      <!-- Riwayat Jabatan Terakhir -->
-      <div class="bg-white rounded-xl shadow-sm border border-slate-100 p-6">
+        <!-- Riwayat Jabatan Terakhir -->
+        <div class="lg:col-span-2 bg-white rounded-xl shadow-sm border border-slate-100 p-6 flex flex-col">
         <div class="flex items-center justify-between mb-5">
           <div class="flex items-center gap-3">
             <div class="w-8 h-8 rounded-lg bg-violet-100 text-violet-600 flex items-center justify-center">
@@ -305,6 +206,7 @@
       </div>
     </div>
   </div>
+</div>
 </template>
 
 <script setup>
@@ -333,6 +235,11 @@ const counts = ref({
   keluarga: 0,
 })
 
+// Analytics state
+const masaKerja = ref({ tahun: 0, bulan: 0 })
+const profileCompletion = ref(0)
+const currentJabatan = ref(null)
+
 // Computed
 const profileId = computed(() => authStore.user?.profile_id)
 const hasData = computed(() => !!profileData.value.nama_lengkap)
@@ -345,6 +252,40 @@ const formattedDate = computed(() => {
     day: 'numeric',
   })
 })
+
+const hitungMasaKerja = (tmtString) => {
+  if (!tmtString) return { tahun: 0, bulan: 0 }
+  const tmt = new Date(tmtString)
+  if (isNaN(tmt)) return { tahun: 0, bulan: 0 }
+  
+  const now = new Date()
+  let years = now.getFullYear() - tmt.getFullYear()
+  let months = now.getMonth() - tmt.getMonth()
+  
+  if (months < 0) {
+    years--
+    months += 12
+  }
+  return { tahun: years, bulan: months }
+}
+
+const hitungKelengkapanProfil = (umum, pekerjaan, pendidikanCount, keluargaCount) => {
+  const fieldsToCheck = [
+    umum?.nip, umum?.nama_lengkap, umum?.tempat_lahir, umum?.tanggal_lahir,
+    umum?.jenis_kelamin, umum?.agama_id, umum?.telepon, umum?.alamat_1_id,
+    pekerjaan?.jabatan_id, pekerjaan?.unit_kerja_id, pekerjaan?.status_kepegawaian_id
+  ]
+  
+  let filledFields = fieldsToCheck.filter(field => field !== null && field !== undefined && field !== '').length
+  let totalFields = fieldsToCheck.length
+  
+  // Bonus items
+  if (pendidikanCount > 0) { filledFields++; totalFields++; } else { totalFields++; }
+  if (keluargaCount > 0) { filledFields++; totalFields++; } else { totalFields++; }
+  if (umum?.foto_url) { filledFields++; totalFields++; } else { totalFields++; }
+  
+  return Math.round((filledFields / totalFields) * 100)
+}
 
 // Methods
 const fetchAll = async () => {
@@ -399,6 +340,25 @@ const fetchAll = async () => {
       const kelData = keluargaRes.value.data.data
       counts.value.keluarga = Array.isArray(kelData) ? kelData.length : 0
     }
+
+    // Compute Analytics
+    if (pekerjaanData.value.tmt_cpns) {
+       masaKerja.value = hitungMasaKerja(pekerjaanData.value.tmt_cpns)
+    } else if (pekerjaanData.value.tmt_pns) {
+       masaKerja.value = hitungMasaKerja(pekerjaanData.value.tmt_pns)
+    }
+
+    // Find current active job
+    if (riwayatJabatan.value.length > 0) {
+       currentJabatan.value = riwayatJabatan.value.find(rj => rj.is_aktif) || riwayatJabatan.value[0]
+    }
+
+    profileCompletion.value = hitungKelengkapanProfil(
+      profileData.value, 
+      pekerjaanData.value, 
+      counts.value.pendidikan, 
+      counts.value.keluarga
+    )
 
   } catch (error) {
     console.error('Error loading pegawai dashboard:', error)
