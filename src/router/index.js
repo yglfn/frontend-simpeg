@@ -70,6 +70,13 @@ const router = createRouter({
                     component: () => import('@/views/admin/DataPegawai.vue'),
                     meta: { requiresAuth: true }
                 },
+                {
+                    path: 'super-admin/data-pegawai/:id',
+                    name: 'admin-detail-pegawai',
+                    component: () => import('@/views/admin/DetailPengguna.vue'),
+                    meta: { requiresAuth: true },
+                    props: true
+                },
 
                 // Pegawai Routes
                 {

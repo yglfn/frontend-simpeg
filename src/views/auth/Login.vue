@@ -72,9 +72,6 @@
              <p class="text-slate-500">Silakan masuk ke akun Anda</p>
         </div>
 
-        <div v-if="authStore.error" class="bg-red-50 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded shadow-sm" role="alert">
-            <p>{{ authStore.error }}</p>
-        </div>
 
         <div class="form-group">
           <label for="username" class="form-label">Email / NIP / NIK / Nomor Identitas</label>

@@ -153,15 +153,8 @@
                 </td>
                 <td>
                   <div class="action-group">
-                    <button class="btn-action view" @click="viewDetail(employee)" title="Detail">
+                    <button class="btn-action view" @click="$router.push({ name: 'admin-detail-pegawai', params: { id: employee.profile_id } })" title="Detail">
                       <i class="fas fa-eye"></i>
-                    </button>
-                    <button class="btn-action edit" @click="openEditModal(employee)" title="Edit">
-                      <i class="fas fa-pen"></i>
-                    </button>
-                    <!-- Tombol Reset Password -->
-                    <button class="btn-action password" @click="openPasswordModal(employee)" title="Reset & Ubah Password" style="background: #f3e8ff; color: #9333ea;">
-                      <i class="fas fa-key"></i>
                     </button>
                     <button class="btn-action delete" @click="confirmDelete(employee)" title="Hapus">
                       <i class="fas fa-trash-alt"></i>

@@ -1,7 +1,7 @@
 <template>
     <Teleport to="body">
         <Transition name="toast">
-            <div v-if="toast.show" class="fixed top-6 right-6 z-[10000] max-w-sm">
+            <div v-if="toast.show" class="fixed top-6 left-1/2 -translate-x-1/2 z-[10000] max-w-sm">
                 <div :class="[
                     'flex items-center gap-3 px-5 py-3.5 rounded-xl shadow-lg border text-sm font-medium',
                     toast.type === 'success' ? 'bg-emerald-50 border-emerald-200 text-emerald-700' : 
@@ -29,6 +29,6 @@ const { toast } = useToast()
 <style scoped>
 .toast-enter-active { animation: slideIn 0.3s ease-out; }
 .toast-leave-active { animation: slideOut 0.25s ease-in; }
-@keyframes slideIn { from { opacity: 0; transform: translateX(60px); } to { opacity: 1; transform: translateX(0); } }
-@keyframes slideOut { from { opacity: 1; transform: translateX(0); } to { opacity: 0; transform: translateX(60px); } }
+@keyframes slideIn { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+@keyframes slideOut { from { opacity: 1; transform: translateY(0); } to { opacity: 0; transform: translateY(-20px); } }
 </style>
